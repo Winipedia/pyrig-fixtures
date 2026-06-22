@@ -915,15 +915,15 @@ wheels = [
 
 [[package]]
 name = "pyrig-codecov"
-version = "1.6.1"
+version = "1.7.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyrig" },
     { name = "pyrig-dev" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d3/bc/63e7632a0b575da6f4ea5cd4ef42ee791257e087819f6c6864cbef1c3564/pyrig_codecov-1.6.1.tar.gz", hash = "sha256:ea7056e2791ec07d820125b1f79402930a379d231cd0aea7e976b14eae37a13c", size = 5339, upload-time = "2026-06-21T01:48:31.5Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e0/c6/76ea7667dc1e29259734dc6223e4e958392c95c2bba92540445858fe02be/pyrig_codecov-1.7.0.tar.gz", hash = "sha256:e7b7449106ac91794128932db6950b8f11b702c89f9b6367b13e712e9502209d", size = 5353, upload-time = "2026-06-22T02:51:10.253Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b9/dc/4c8dcc1a774e10d6c3ffdc8e1ddc14e31ed93b64f52ee9b7c29abb1c9e04/pyrig_codecov-1.6.1-py3-none-any.whl", hash = "sha256:87a6a4cbb6a5cf09770523735b20818c7fbfd7b55493b04eadc869b0be88bc70", size = 8889, upload-time = "2026-06-21T01:48:30.484Z" },
+    { url = "https://files.pythonhosted.org/packages/69/52/85ca34903e1fc66c78d2efdba3e9d7ca7642764a85ca898cb68a0397d62a/pyrig_codecov-1.7.0-py3-none-any.whl", hash = "sha256:535a2f46606aa4d335b537ac2183c432abe0ee9dcbba200d9ac3e789a70383d9", size = 8889, upload-time = "2026-06-22T02:51:09.484Z" },
 ]
 
 [[package]]
@@ -945,7 +945,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-fixtures"
-version = "0.8.0"
+version = "0.9.0"
 source = { editable = "." }
 dependencies = [
     { name = "pyrig" },
