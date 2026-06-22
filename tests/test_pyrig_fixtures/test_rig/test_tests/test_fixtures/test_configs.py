@@ -80,5 +80,6 @@ def test_config_file_factory(
         assert not str(path).startswith(str(tmp_path))
 
         sample_config_file().validate()
+        assert sample_config_file().is_correct()
 
         assert path.exists()
