@@ -3,10 +3,10 @@
 import platform
 from collections.abc import Callable
 
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
 )
-from pyrig_dev.rig.configs.pyproject import PyprojectConfigFile
 
 
 def test_on_linux_and_latest_python_version(

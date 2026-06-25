@@ -9,10 +9,10 @@ import platform
 from collections.abc import Callable
 
 import pytest
+from pyrig.rig.configs.pyproject import PyprojectConfigFile
 from pyrig.rig.tools.version_control.remote import (
     RemoteVersionController,
 )
-from pyrig_dev.rig.configs.pyproject import PyprojectConfigFile
 
 
 @pytest.fixture(scope="session")

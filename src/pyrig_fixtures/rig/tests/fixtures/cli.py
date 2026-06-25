@@ -25,6 +25,7 @@ def command_works() -> Callable[[Callable[..., Any]], None]:
     """
 
     def check(cmd: Callable[..., Any]) -> None:
+        """Run ``cmd`` with ``--help`` and assert its name appears in stdout."""
         # run the --help command to see if it is available
         args = PackageManager.I.project_cmd_args("--help", cmd=cmd)
         completed_process = args.run()
@@ -53,6 +54,7 @@ def command_calls_function(
     """
 
     def check(cmd: Callable[..., Any], function: Callable[..., Any]) -> None:
+        """Run ``cmd`` and assert it calls ``function`` exactly once."""
         mock = mocker.patch(function.__module__ + "." + function.__name__)  # ty:ignore[unresolved-attribute]
         cmd()
         mock.assert_called_once()

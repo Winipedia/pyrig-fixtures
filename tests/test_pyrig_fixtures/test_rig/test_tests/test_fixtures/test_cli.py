@@ -3,8 +3,8 @@
 from collections.abc import Callable
 from typing import Any
 
-from pyrig.rig.cli.commands.version import project_version
-from pyrig.rig.cli.shared_subcommands import version
+from pyrig_runtime.rig.cli.commands.version import project_version
+from pyrig_runtime.rig.cli.shared_subcommands import version
 
 
 def test_command_works(command_works: Callable[[Callable[..., Any]], None]) -> None:

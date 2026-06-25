@@ -28,6 +28,6 @@
 
 ---
 
-> Add your description here
+> A package for pyrig with pytest fixture support.
 
 ---

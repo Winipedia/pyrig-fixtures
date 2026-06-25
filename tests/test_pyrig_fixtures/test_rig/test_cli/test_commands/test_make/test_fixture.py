@@ -5,8 +5,8 @@ from contextlib import chdir
 from pathlib import Path
 from typing import Any
 
-from pyrig.core.strings import snake_to_kebab_case
 from pyrig.core.subprocesses import run_subprocess
+from pyrig_runtime.core.strings import snake_to_kebab_case
 
 from pyrig_fixtures.rig.cli import fixture
 from pyrig_fixtures.rig.cli.commands.make.fixture import make_fixture
