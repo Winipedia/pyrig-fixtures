@@ -71,9 +71,6 @@ def on_linux(on_platform: Callable[[str], bool]) -> bool:
 def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
     """Return whether the running Python version matches the latest stable release.
 
-    The latest version is read from the project's bundled
-    ``LATEST_PYTHON_VERSION`` resource via ``PyprojectConfigFile``.
-
     Args:
         on_python_version: Fixture for checking the current Python version.
 
@@ -90,13 +87,11 @@ def on_platform() -> Callable[[str], bool]:
     """Check if the current system platform matches a given name.
 
     Returns:
-        A callable ``(platform_name) -> bool`` that compares
-        ``platform.system()`` against the given name (e.g., ``"Linux"``,
-        ``"Windows"``, ``"Darwin"``).
+        A callable `(platform_name) -> bool` that compares `platform.system()`
+        against the given name (e.g., `"Linux"`, `"Windows"`, `"Darwin"`).
     """
 
     def check(platform_name: str) -> bool:
-        """Check if the current system is the specified platform."""
         return platform.system() == platform_name
 
     return check
@@ -107,13 +102,11 @@ def on_python_version() -> Callable[[str], bool]:
     """Check if the current Python version matches a given version string.
 
     Returns:
-        A callable ``(version) -> bool`` that compares
-        ``platform.python_version()`` against the given version string
-        (e.g., ``"3.13.2"``).
+        A callable `(version) -> bool` that compares `platform.python_version()`
+        against the given version string (e.g., `"3.13.2"`).
     """
 
     def check(version: str) -> bool:
-        """Check if the current Python version matches the specified version."""
         return platform.python_version() == version
 
     return check

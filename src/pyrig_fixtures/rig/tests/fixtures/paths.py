@@ -31,8 +31,8 @@ def tmp_package_root_path(
         create_source_package: Fixture for creating packages in the source root.
 
     Returns:
-        Tuple of ``(path, package)`` where ``path`` is the package root
-        directory and ``package`` is the imported package module.
+        Tuple of `(path, package)` where `path` is the package root
+        directory and `package` is the imported package module.
     """
     path = tmp_project_root_path / PackageManager.I.package_root()
 

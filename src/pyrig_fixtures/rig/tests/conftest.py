@@ -1,12 +1,9 @@
-"""Pytest configuration for automatic fixture discovery across the pyrig ecosystem.
+"""Pytest configuration for automatic fixture discovery across dependent packages.
 
-Registers fixture modules from pyrig and all installed packages that depend on
-it as pytest plugins. This makes all discovered fixtures available in every
-test module without explicit imports.
-
-The registration walks the ``<project_name>.rig.tests.fixtures`` package path in
-pyrig and all pyrig dependent packages, collecting all Python modules except
-``__init__.py`` modules and registers them as plugins.
+Registers every fixture module in this package's fixtures package, and in the
+equivalent fixtures package of every installed package that depends on it, as
+a pytest plugin. This makes all discovered fixtures available in every test
+module without explicit imports.
 """
 
 from itertools import chain

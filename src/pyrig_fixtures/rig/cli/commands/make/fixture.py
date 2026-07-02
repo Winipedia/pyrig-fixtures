@@ -1,4 +1,4 @@
-"""Scaffold shared pytest fixtures for a pyrig-managed project."""
+"""Scaffolding for shared pytest fixtures in a pyrig-managed project."""
 
 import pytest
 from pyrig.rig.configs.base.copy_module_docstring import (
@@ -12,14 +12,14 @@ from pyrig_fixtures.rig.tests.fixtures import fixtures
 def make_fixture(name: str) -> None:
     """Scaffold a new pytest fixture in the project's shared fixtures module.
 
-    Ensures the shared ``fixtures.py`` file exists, then appends a new
-    ``@pytest.fixture``-decorated function with the given name. If
-    ``import pytest`` is not already present in the file, it is added
+    Ensures the shared fixtures module exists, then appends a new
+    `@pytest.fixture`-decorated function with the given name. If
+    `import pytest` is not already present in the module, it is added
     before the new fixture.
 
     The name is normalized from kebab-case to snake_case so it forms a
-    valid Python identifier (e.g. ``"my-new-fixture"`` becomes
-    ``"my_new_fixture"``).
+    valid Python identifier (e.g. `"my-new-fixture"` becomes
+    `"my_new_fixture"`).
 
     Args:
         name: Name of the fixture in kebab-case or snake_case.

@@ -16,16 +16,16 @@ from pytest_mock import MockerFixture
 def command_works() -> Callable[[Callable[..., Any]], None]:
     """Return a callable that verifies a CLI command is registered and executable.
 
-    The returned function runs the command with ``--help`` and asserts that
+    The returned function runs the command with `--help` and asserts that
     the command executes successfully and that its name appears in stdout.
 
     Returns:
-        A callable ``(cmd) -> None`` that accepts a CLI function and asserts
+        A callable `(cmd) -> None` that accepts a CLI function and asserts
         it is reachable and produces help output.
     """
 
     def check(cmd: Callable[..., Any]) -> None:
-        """Run ``cmd`` with ``--help`` and assert its name appears in stdout."""
+        """Run `cmd` with `--help` and assert its name appears in stdout."""
         # run the --help command to see if it is available
         args = PackageManager.I.project_cmd_args("--help", cmd=cmd)
         completed_process = args.run()
@@ -49,12 +49,12 @@ def command_calls_function(
         mocker: pytest-mock fixture for patching.
 
     Returns:
-        A callable ``(cmd, function) -> None`` that asserts ``cmd`` calls
-        ``function`` exactly once.
+        A callable `(cmd, function) -> None` that asserts `cmd` calls
+        `function` exactly once.
     """
 
     def check(cmd: Callable[..., Any], function: Callable[..., Any]) -> None:
-        """Run ``cmd`` and assert it calls ``function`` exactly once."""
+        """Run `cmd` and assert it calls `function` exactly once."""
         mock = mocker.patch(function.__module__ + "." + function.__name__)  # ty:ignore[unresolved-attribute]
         cmd()
         mock.assert_called_once()

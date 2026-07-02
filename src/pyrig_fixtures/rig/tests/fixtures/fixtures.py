@@ -1,6 +1,5 @@
-"""Shared pytest fixtures for pyrig and all projects built with it.
+"""Catch-all module for shared pytest fixtures with no more specific home.
 
-Fixtures defined here or any other file in the same package
-are automatically discovered by pytest and made available to any pytest suite
-that inherits from this project.
+Fixtures scaffolded without a dedicated topic are appended here rather than
+sorted into one of the other themed fixture modules.
 """
