@@ -28,6 +28,36 @@
 
 ---
 
-> A package for pyrig with pytest fixture support.
+> A pyrig plugin that provides pytest fixtures support.
 
 ---
+
+## Overview
+
+pyrig-fixtures is a [pyrig](https://github.com/Winipedia/pyrig) plugin that
+provides a library of reusable pytest fixtures for testing pyrig projects. Its
+fixtures — and any contributed by packages that depend on it — are made
+available automatically in every project that installs it.
+
+## What it adds
+
+- **A fixture library** — ready-made fixtures for common testing needs:
+  temporary project trees, module and package creation, config-file testing,
+  CLI-command assertions, and environment gating.
+- **Automatic, cross-package availability** — fixtures are registered as a
+  pytest plugin so they work without imports, and any installed package that
+  depends on pyrig-fixtures contributes its own fixtures the same way.
+- **A scaffolding command** — `pyrig mk fixture <name>` adds a new fixture stub
+  to your project's shared fixtures module.
+
+## Usage
+
+```bash
+uv add pyrig-fixtures --dev
+uv run pyrig sync
+```
+
+## Documentation
+
+Full documentation, including the auto-generated API reference, is available on
+the [documentation site](https://Winipedia.github.io/pyrig-fixtures).

@@ -1,7 +1,7 @@
 {
     "repository": {
         "name": "pyrig-fixtures",
-        "description": "A package for pyrig with pytest fixture support.",
+        "description": "A pyrig plugin that provides pytest fixtures support.",
         "default_branch": "main",
         "delete_branch_on_merge": true,
         "allow_update_branch": true,

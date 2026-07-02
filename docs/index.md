@@ -28,6 +28,49 @@
 
 ---
 
-> A package for pyrig with pytest fixture support.
+> A pyrig plugin that provides pytest fixtures support.
 
 ---
+
+## Overview
+
+pyrig-fixtures provides a library of reusable pytest fixtures for testing
+[pyrig](https://github.com/Winipedia/pyrig)-managed projects. Installed as a
+development dependency, it makes fixtures available in every project's test
+suite — its own and those contributed by any installed package that depends on
+it — and adds a command for scaffolding new ones.
+
+## Installation
+
+```bash
+uv add pyrig-fixtures --dev
+uv run pyrig sync
+```
+
+## How it works
+
+### Automatic, cross-package availability
+
+The generated `tests/conftest.py` registers pyrig-fixtures' conftest as a pytest
+plugin. That conftest registers, as pytest plugins, every fixture module in
+pyrig-fixtures' `rig/tests/fixtures/` package **and** in the matching
+`rig/tests/fixtures/` package of every installed package that depends on
+pyrig-fixtures — discovered automatically, with no registration. All discovered
+fixtures are then usable in any test without an explicit import.
+
+Fixtures therefore compose across packages: any package that depends on
+pyrig-fixtures contributes fixtures simply by placing them under its own
+`rig/tests/fixtures/` package. Your own project is one such dependent, so the
+fixtures you add there are picked up too.
+
+### Scaffolding command
+
+`pyrig mk fixture <name>` appends a new `@pytest.fixture` stub to your project's
+shared fixtures module under `rig/tests/fixtures/`, creating it if needed — a
+discovered location, so the new fixture is registered and available
+automatically.
+
+## API Reference
+
+For class- and method-level details, see the [API Reference](api.md), generated
+automatically from the source.
