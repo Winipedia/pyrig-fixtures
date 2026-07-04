@@ -55,7 +55,6 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
                     resolve to a location under `tmp_path`.
                 """
                 path = super().path()
-                # append tmp_path to path if not already in tmp_path
                 if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
                     path = tmp_path / path
                 return path

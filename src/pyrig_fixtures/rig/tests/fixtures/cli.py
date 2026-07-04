@@ -1,11 +1,12 @@
 """Shared pytest fixtures for testing the project's CLI commands.
 
-Provides helpers that assert a CLI command is registered and reachable, and
-that a command delegates to its expected implementation function.
+Provides helpers that check whether a CLI command is registered and
+reachable, and whether a command delegates to its expected implementation
+function.
 """
 
 from collections.abc import Callable
-from typing import Any
+from types import FunctionType
 
 import pytest
 from pyrig.rig.tools.package_manager import PackageManager
@@ -13,25 +14,24 @@ from pytest_mock import MockerFixture
 
 
 @pytest.fixture
-def command_works() -> Callable[[Callable[..., Any]], None]:
+def command_works() -> Callable[[FunctionType], bool]:
     """Return a callable that verifies a CLI command is registered and executable.
 
-    The returned function runs the command with `--help` and asserts that
-    the command executes successfully and that its name appears in stdout.
+    The returned function runs the command with `--help` and checks whether
+    the command executes successfully and its name appears in stdout.
 
     Returns:
-        A callable `(cmd) -> None` that accepts a CLI function and asserts
-        it is reachable and produces help output.
+        A callable `(cmd) -> bool` that accepts a CLI function and returns
+        True if it is reachable and produces help output, False otherwise.
     """
 
-    def check(cmd: Callable[..., Any]) -> None:
-        """Run `cmd` with `--help` and assert its name appears in stdout."""
-        # run the --help command to see if it is available
+    def check(cmd: FunctionType) -> bool:
+        """Run `cmd` with `--help` and return whether its name appears in stdout."""
         args = PackageManager.I.project_cmd_args("--help", cmd=cmd)
         completed_process = args.run()
         stdout = completed_process.stdout
-        name = cmd.__name__.replace("_", "-")  # ty:ignore[unresolved-attribute]
-        assert name in stdout
+        name = cmd.__name__.replace("_", "-")
+        return name in stdout
 
     return check
 
@@ -39,24 +39,25 @@ def command_works() -> Callable[[Callable[..., Any]], None]:
 @pytest.fixture
 def command_calls_function(
     mocker: MockerFixture,
-) -> Callable[[Callable[..., Any], Callable[..., Any]], None]:
+) -> Callable[[FunctionType, FunctionType], bool]:
     """Return a callable that verifies a CLI command delegates to the expected function.
 
     The returned function patches the target function by its fully qualified
-    name, invokes the command, and asserts the patch was called exactly once.
+    name, invokes the command, and checks whether the patch was called
+    exactly once.
 
     Args:
         mocker: pytest-mock fixture for patching.
 
     Returns:
-        A callable `(cmd, function) -> None` that asserts `cmd` calls
-        `function` exactly once.
+        A callable `(cmd, function) -> bool` that returns True if `cmd` calls
+        `function` exactly once, False otherwise.
     """
 
-    def check(cmd: Callable[..., Any], function: Callable[..., Any]) -> None:
-        """Run `cmd` and assert it calls `function` exactly once."""
-        mock = mocker.patch(function.__module__ + "." + function.__name__)  # ty:ignore[unresolved-attribute]
+    def check(cmd: FunctionType, function: FunctionType) -> bool:
+        """Run `cmd` and return True if it calls `function` exactly once."""
+        mock = mocker.patch(function.__module__ + "." + function.__name__)
         cmd()
-        mock.assert_called_once()
+        return mock.call_count == 1
 
     return check

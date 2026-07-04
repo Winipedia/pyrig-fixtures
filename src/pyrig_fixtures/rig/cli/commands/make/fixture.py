@@ -30,7 +30,6 @@ def make_fixture(name: str) -> None:
 
     name = kebab_to_snake_case(name)
     pytest_import = f"import {pytest.__name__}"
-    # checking with splitlines to avoid substring matches, like import pytest_mock
     if pytest_import not in content.splitlines():
         content += f"""
 {pytest_import}

@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-fixtures"
-version = "2.0.1"
+version = "2.1.0"
 description = "A pyrig plugin that provides pytest fixtures support."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -85,7 +85,7 @@ fixable = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**/*.py" = [
+"tests/**/*.py" = [
     "S101",
 ]
 
@@ -100,12 +100,6 @@ testpaths = [
     "tests",
 ]
 addopts = "--cov=pyrig_fixtures --cov-branch --cov-report=term-missing --cov-fail-under=100 --cov-report=xml"
-
-[tool.bandit.assert_used]
-skips = [
-    "*/tests/*.py",
-    "*/test_*/*.py",
-]
 
 [tool.deptry]
 root = "src"

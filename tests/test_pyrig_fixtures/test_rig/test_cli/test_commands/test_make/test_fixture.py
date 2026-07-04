@@ -3,7 +3,7 @@
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-from typing import Any
+from types import FunctionType
 
 from pyrig.core.subprocesses import run_subprocess
 from pyrig_runtime.core.strings import snake_to_kebab_case
@@ -13,7 +13,7 @@ from pyrig_fixtures.rig.cli.commands.make.fixture import make_fixture
 
 
 def test_fixture(
-    command_calls_function: Callable[[Callable[..., Any], Callable[..., Any]], None],
+    command_calls_function: Callable[[FunctionType, FunctionType], bool],
 ) -> None:
     """Test function."""
     result = run_subprocess(
@@ -21,7 +21,7 @@ def test_fixture(
     )
     assert result.returncode == 0
 
-    command_calls_function(fixture, make_fixture)
+    assert command_calls_function(fixture, make_fixture)
 
 
 def test_make_fixture(tmp_path: Path) -> None:
