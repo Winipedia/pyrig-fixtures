@@ -15,7 +15,6 @@ from pyrig.core.introspection.modules import (
     import_module_with_file_fallback,
 )
 from pyrig.core.introspection.packages import (
-    import_package_with_dir_fallback,
     make_package_dir,
 )
 from pyrig.core.introspection.paths import path_as_module_name
@@ -60,7 +59,7 @@ def create_package() -> Callable[[Path], ModuleType]:
     def create(path: Path) -> ModuleType:
         """Create and import an empty package at `path`."""
         make_package_dir(path, until=(), content="")
-        return import_package_with_dir_fallback(path, name=path_as_module_name(path))
+        return import_module_with_file_fallback(path, name=path_as_module_name(path))
 
     return create
 
