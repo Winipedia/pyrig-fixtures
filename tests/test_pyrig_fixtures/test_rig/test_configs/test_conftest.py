@@ -9,6 +9,10 @@ from pyrig_fixtures.rig.tests import conftest
 class TestConftestConfigFile:
     """Test class."""
 
+    def test_package_root(self) -> None:
+        """Test method."""
+        assert ConftestConfigFile.I.package_root() == Path("tests")
+
     def test_is_correct(self) -> None:
         """Test method."""
         assert ConftestConfigFile.I.is_correct()

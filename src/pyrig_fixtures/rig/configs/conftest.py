@@ -24,13 +24,17 @@ class ConftestConfigFile(CopyModuleDocstringConfigFile):
     explicit import in each test file.
     """
 
+    def package_root(self) -> Path:
+        """Override to return the root directory of the tests package."""
+        return ProjectTester.I.package_root()
+
     def parent_path(self) -> Path:
         """Return the root directory of the tests package.
 
         Returns:
             Path to the tests package root, e.g. `Path("tests")`.
         """
-        return ProjectTester.I.tests_package_root()
+        return self.package_root()
 
     def stem(self) -> str:
         """Return the filename stem for the generated file.

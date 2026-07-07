@@ -58,7 +58,7 @@ def create_package() -> Callable[[Path], ModuleType]:
 
     def create(path: Path) -> ModuleType:
         """Create and import an empty package at `path`."""
-        make_package_dir(path, until=(), content="")
+        make_package_dir(path, root=Path(), content="")
         return import_module_with_file_fallback(path, name=path_as_module_name(path))
 
     return create
@@ -79,7 +79,7 @@ def create_module() -> Callable[[Path], ModuleType]:
 
     def create(path: Path) -> ModuleType:
         """Create and import an empty module at `path`."""
-        make_package_dir(path.parent, until=(), content="")
+        make_package_dir(path.parent, root=Path(), content="")
         path.touch()
         return import_module_with_file_fallback(path, name=path_as_module_name(path))
 
