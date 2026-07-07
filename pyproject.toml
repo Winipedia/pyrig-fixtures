@@ -1,12 +1,12 @@
 [project]
 name = "pyrig-fixtures"
-version = "2.2.2"
+version = "2.2.3"
 description = "A pyrig plugin that provides pytest fixtures support."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "pyrig>=17.0.0",
-    "pyrig-runtime>=2.0.0",
+    "pyrig>=17.6.0",
+    "pyrig-runtime>=3.0.5",
     "pytest>=9.1.1",
     "pytest-mock>=3.15.1",
     "typer>=0.26.8",
@@ -54,10 +54,10 @@ dev = [
     "mkdocs-mermaid2-plugin>=1.2.3",
     "mkdocstrings[python]>=1.0.4",
     "pip-audit>=2.10.1",
-    "prek>=0.4.6",
-    "pyrig>=17.0.0",
-    "pyrig-codecov>=3.0.0",
-    "pyrig-pypi>=3.0.0",
+    "prek>=0.4.8",
+    "pyrig>=17.6.0",
+    "pyrig-codecov>=3.0.10",
+    "pyrig-pypi>=3.0.10",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "ruff>=0.15.20",
