@@ -41,6 +41,21 @@ def tmp_package_root_path(
 
 
 @pytest.fixture
+def tmp_project_root_path(tmp_path: Path) -> Path:
+    """Provide a temporary project root directory named after the current project.
+
+    Args:
+        tmp_path: Pytest's per-test temporary directory.
+
+    Returns:
+        Path to the temporary project root directory.
+    """
+    path = tmp_path / PackageManager.I.project_name()
+    path.mkdir()
+    return path
+
+
+@pytest.fixture
 def tmp_source_root_path(tmp_project_root_path: Path) -> Path:
     """Provide the temporary source root directory.
 
@@ -53,20 +68,5 @@ def tmp_source_root_path(tmp_project_root_path: Path) -> Path:
         Path to the temporary source root directory.
     """
     path = tmp_project_root_path / PackageManager.I.source_root()
-    path.mkdir()
-    return path
-
-
-@pytest.fixture
-def tmp_project_root_path(tmp_path: Path) -> Path:
-    """Provide a temporary project root directory named after the current project.
-
-    Args:
-        tmp_path: Pytest's per-test temporary directory.
-
-    Returns:
-        Path to the temporary project root directory.
-    """
-    path = tmp_path / PackageManager.I.project_name()
     path.mkdir()
     return path

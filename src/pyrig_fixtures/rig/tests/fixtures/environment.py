@@ -16,6 +16,50 @@ from pyrig.rig.tools.version_control.remote import (
 
 
 @pytest.fixture(scope="session")
+def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
+    """Return whether the running Python version matches the latest stable release.
+
+    Args:
+        on_python_version: Fixture for checking the current Python version.
+
+    Returns:
+        True if the current Python micro version matches the latest stable
+        release.
+    """
+    latest_version = PyprojectConfigFile.I.latest_python_version("micro")
+    return on_python_version(str(latest_version))
+
+
+@pytest.fixture(scope="session")
+def on_linux(on_platform: Callable[[str], bool]) -> bool:
+    """Return whether the current system is Linux.
+
+    Args:
+        on_platform: Fixture for checking the current platform by name.
+
+    Returns:
+        True if the system is Linux.
+    """
+    return on_platform("Linux")
+
+
+@pytest.fixture(scope="session")
+def on_linux_and_latest_python_version(
+    *, on_linux: bool, on_latest_python_version: bool
+) -> bool:
+    """Return whether the current environment is Linux with the latest Python version.
+
+    Args:
+        on_linux: Whether the current system is Linux.
+        on_latest_python_version: Whether the current Python version is the latest.
+
+    Returns:
+        True if both conditions are met.
+    """
+    return on_linux and on_latest_python_version
+
+
+@pytest.fixture(scope="session")
 def on_linux_and_latest_python_version_or_not_in_ci(
     *, on_linux_and_latest_python_version: bool
 ) -> bool:
@@ -36,50 +80,6 @@ def on_linux_and_latest_python_version_or_not_in_ci(
     return (
         on_linux_and_latest_python_version
     ) or not RemoteVersionController.I.running_in_ci()
-
-
-@pytest.fixture(scope="session")
-def on_linux_and_latest_python_version(
-    *, on_linux: bool, on_latest_python_version: bool
-) -> bool:
-    """Return whether the current environment is Linux with the latest Python version.
-
-    Args:
-        on_linux: Whether the current system is Linux.
-        on_latest_python_version: Whether the current Python version is the latest.
-
-    Returns:
-        True if both conditions are met.
-    """
-    return on_linux and on_latest_python_version
-
-
-@pytest.fixture(scope="session")
-def on_linux(on_platform: Callable[[str], bool]) -> bool:
-    """Return whether the current system is Linux.
-
-    Args:
-        on_platform: Fixture for checking the current platform by name.
-
-    Returns:
-        True if the system is Linux.
-    """
-    return on_platform("Linux")
-
-
-@pytest.fixture(scope="session")
-def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
-    """Return whether the running Python version matches the latest stable release.
-
-    Args:
-        on_python_version: Fixture for checking the current Python version.
-
-    Returns:
-        True if the current Python micro version matches the latest stable
-        release.
-    """
-    latest_version = PyprojectConfigFile.I.latest_python_version("micro")
-    return on_python_version(str(latest_version))
 
 
 @pytest.fixture(scope="session")

@@ -21,24 +21,23 @@ from pyrig.core.introspection.paths import path_as_module_name
 
 
 @pytest.fixture
-def create_source_package(
-    tmp_source_root_path: Path, create_package: Callable[[Path], ModuleType]
-) -> Callable[[Path], ModuleType]:
-    """Return a callable that creates a Python package under the temporary source root.
+def create_module() -> Callable[[Path], ModuleType]:
+    """Return a callable that creates a Python module at a given path.
 
-    Args:
-        tmp_source_root_path: Temporary source root directory.
-        create_package: Fixture that creates and imports a package.
+    The returned function ensures the parent directory is a proper package
+    hierarchy (adding `__init__.py` files up to the current working
+    directory), touches the module file, and imports it.
 
     Returns:
         A callable `(path) -> ModuleType` that creates and imports an empty
-        package at `path` relative to the temporary source root.
+        module at `path`.
     """
 
     def create(path: Path) -> ModuleType:
-        """Create and import an empty package at `path` relative to the source root."""
-        with chdir(tmp_source_root_path):
-            return create_package(path)
+        """Create and import an empty module at `path`."""
+        make_package_dir(path.parent, root=Path(), content="")
+        path.touch()
+        return import_module_with_file_fallback(path, name=path_as_module_name(path))
 
     return create
 
@@ -65,22 +64,23 @@ def create_package() -> Callable[[Path], ModuleType]:
 
 
 @pytest.fixture
-def create_module() -> Callable[[Path], ModuleType]:
-    """Return a callable that creates a Python module at a given path.
+def create_source_package(
+    tmp_source_root_path: Path, create_package: Callable[[Path], ModuleType]
+) -> Callable[[Path], ModuleType]:
+    """Return a callable that creates a Python package under the temporary source root.
 
-    The returned function ensures the parent directory is a proper package
-    hierarchy (adding `__init__.py` files up to the current working
-    directory), touches the module file, and imports it.
+    Args:
+        tmp_source_root_path: Temporary source root directory.
+        create_package: Fixture that creates and imports a package.
 
     Returns:
         A callable `(path) -> ModuleType` that creates and imports an empty
-        module at `path`.
+        package at `path` relative to the temporary source root.
     """
 
     def create(path: Path) -> ModuleType:
-        """Create and import an empty module at `path`."""
-        make_package_dir(path.parent, root=Path(), content="")
-        path.touch()
-        return import_module_with_file_fallback(path, name=path_as_module_name(path))
+        """Create and import an empty package at `path` relative to the source root."""
+        with chdir(tmp_source_root_path):
+            return create_package(path)
 
     return create

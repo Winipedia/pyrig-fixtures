@@ -47,18 +47,6 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
         class TestConfigFile(base_class):  # ty: ignore[unsupported-base]
             """Subclass of `base_class` with every file operation under `tmp_path`."""
 
-            def path(self) -> Path:
-                """Return the config file path, relocated under `tmp_path`.
-
-                Returns:
-                    The path from the parent implementation, guaranteed to
-                    resolve to a location under `tmp_path`.
-                """
-                path = super().path()
-                if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
-                    path = tmp_path / path
-                return path
-
             def _dump(self, configs: dict[str, Any] | list[Any]) -> None:
                 """Write the config from within `tmp_path`, isolating real files."""
                 with chdir(tmp_path):
@@ -73,6 +61,18 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
                 """Create the file from within `tmp_path`, isolating real files."""
                 with chdir(tmp_path):
                     super().create_file()
+
+            def path(self) -> Path:
+                """Return the config file path, relocated under `tmp_path`.
+
+                Returns:
+                    The path from the parent implementation, guaranteed to
+                    resolve to a location under `tmp_path`.
+                """
+                path = super().path()
+                if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
+                    path = tmp_path / path
+                return path
 
         return TestConfigFile  # ty:ignore[invalid-return-type]
 

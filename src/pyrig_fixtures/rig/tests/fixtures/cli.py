@@ -14,29 +14,6 @@ from pytest_mock import MockerFixture
 
 
 @pytest.fixture
-def command_works() -> Callable[[FunctionType], bool]:
-    """Return a callable that verifies a CLI command is registered and executable.
-
-    The returned function runs the command with `--help` and checks whether
-    the command executes successfully and its name appears in stdout.
-
-    Returns:
-        A callable `(cmd) -> bool` that accepts a CLI function and returns
-        True if it is reachable and produces help output, False otherwise.
-    """
-
-    def check(cmd: FunctionType) -> bool:
-        """Run `cmd` with `--help` and return whether its name appears in stdout."""
-        args = PackageManager.I.project_cmd_args("--help", cmd=cmd)
-        completed_process = args.run()
-        stdout = completed_process.stdout
-        name = cmd.__name__.replace("_", "-")
-        return name in stdout
-
-    return check
-
-
-@pytest.fixture
 def command_calls_function(
     mocker: MockerFixture,
 ) -> Callable[[FunctionType, FunctionType], bool]:
@@ -59,5 +36,28 @@ def command_calls_function(
         mock = mocker.patch(function.__module__ + "." + function.__name__)
         cmd()
         return mock.call_count == 1
+
+    return check
+
+
+@pytest.fixture
+def command_works() -> Callable[[FunctionType], bool]:
+    """Return a callable that verifies a CLI command is registered and executable.
+
+    The returned function runs the command with `--help` and checks whether
+    the command executes successfully and its name appears in stdout.
+
+    Returns:
+        A callable `(cmd) -> bool` that accepts a CLI function and returns
+        True if it is reachable and produces help output, False otherwise.
+    """
+
+    def check(cmd: FunctionType) -> bool:
+        """Run `cmd` with `--help` and return whether its name appears in stdout."""
+        args = PackageManager.I.project_cmd_args("--help", cmd=cmd)
+        completed_process = args.run()
+        stdout = completed_process.stdout
+        name = cmd.__name__.replace("_", "-")
+        return name in stdout
 
     return check

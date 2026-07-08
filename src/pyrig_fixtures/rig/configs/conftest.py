@@ -24,33 +24,17 @@ class ConftestConfigFile(CopyModuleDocstringConfigFile):
     explicit import in each test file.
     """
 
-    def package_root(self) -> Path:
-        """Override to return the root directory of the tests package."""
-        return ProjectTester.I.package_root()
+    def is_correct(self) -> bool:
+        """Return whether the generated conftest.py is considered valid.
 
-    def parent_path(self) -> Path:
-        """Return the root directory of the tests package.
-
-        Returns:
-            Path to the tests package root, e.g. `Path("tests")`.
-        """
-        return self.package_root()
-
-    def stem(self) -> str:
-        """Return the filename stem for the generated file.
+        The file is valid if the conftest module name is registered in the
+        `pytest_plugins` list of the file on disk.
 
         Returns:
-            `'conftest'`
+            `True` if the conftest module name is present in the
+            `pytest_plugins` list of the file on disk.
         """
-        return "conftest"
-
-    def copy_module(self) -> ModuleType:
-        """Return the source module whose docstring is written to the generated file.
-
-        Returns:
-            `pyrig_fixtures.rig.tests.conftest`
-        """
-        return conftest
+        return conftest.__name__ in getattr(self.module(), "pytest_plugins", [])
 
     def lines(self) -> list[str]:
         """Return the content of the generated conftest.py as a list of lines.
@@ -64,17 +48,33 @@ class ConftestConfigFile(CopyModuleDocstringConfigFile):
         """
         return [*super().lines(), self.plugin_definition(), ""]
 
-    def is_correct(self) -> bool:
-        """Return whether the generated conftest.py is considered valid.
-
-        The file is valid if the conftest module name is registered in the
-        `pytest_plugins` list of the file on disk.
+    def copy_module(self) -> ModuleType:
+        """Return the source module whose docstring is written to the generated file.
 
         Returns:
-            `True` if the conftest module name is present in the
-            `pytest_plugins` list of the file on disk.
+            `pyrig_fixtures.rig.tests.conftest`
         """
-        return conftest.__name__ in getattr(self.module(), "pytest_plugins", [])
+        return conftest
+
+    def parent_path(self) -> Path:
+        """Return the root directory of the tests package.
+
+        Returns:
+            Path to the tests package root, e.g. `Path("tests")`.
+        """
+        return self.package_root()
+
+    def package_root(self) -> Path:
+        """Override to return the root directory of the tests package."""
+        return ProjectTester.I.package_root()
+
+    def stem(self) -> str:
+        """Return the filename stem for the generated file.
+
+        Returns:
+            `'conftest'`
+        """
+        return "conftest"
 
     def plugin_definition(self) -> str:
         """Return the `pytest_plugins` assignment line for the generated file.
