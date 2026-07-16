@@ -65,7 +65,8 @@ def create_package() -> Callable[[Path], ModuleType]:
 
 @pytest.fixture
 def create_source_package(
-    tmp_source_root_path: Path, create_package: Callable[[Path], ModuleType]
+    tmp_source_root_path: Path,
+    create_package: Callable[[Path], ModuleType],
 ) -> Callable[[Path], ModuleType]:
     """Return a callable that creates a Python package under the temporary source root.
 

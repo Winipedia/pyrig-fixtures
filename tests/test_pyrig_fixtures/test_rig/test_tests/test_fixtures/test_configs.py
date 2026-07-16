@@ -12,7 +12,8 @@ from pyrig.rig.configs.base.config_file import ConfigFile
 @pytest.fixture
 def sample_config_file(
     config_file_factory: Callable[
-        [type[ConfigFile[dict[str, Any]]]], type[ConfigFile[dict[str, Any]]]
+        [type[ConfigFile[dict[str, Any]]]],
+        type[ConfigFile[dict[str, Any]]],
     ],
 ) -> type[ConfigFile[dict[str, Any]]]:
     """Create a sample config file class for testing the factory."""
@@ -49,7 +50,8 @@ def sample_config_file(
 
 
 def test_config_file_factory(
-    sample_config_file: type[ConfigFile[dict[str, Any]]], tmp_path: Path
+    sample_config_file: type[ConfigFile[dict[str, Any]]],
+    tmp_path: Path,
 ) -> None:
     """Test that config_file_factory wraps path to use tmp_path."""
     assert issubclass(sample_config_file, ConfigFile)

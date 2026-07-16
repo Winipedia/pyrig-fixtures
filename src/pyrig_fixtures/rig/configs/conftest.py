@@ -36,17 +36,15 @@ class ConftestConfigFile(CopyModuleDocstringConfigFile):
         """
         return conftest.__name__ in getattr(self.module(), "pytest_plugins", [])
 
-    def lines(self) -> list[str]:
-        """Return the content of the generated conftest.py as a list of lines.
-
-        Extends the parent output (the conftest module's docstring) with the
-        `pytest_plugins` assignment and a trailing blank line.
+    def content(self) -> str:
+        """Return the content of the generated conftest.py as a string.
 
         Returns:
-            Lines comprising the module docstring followed by the
-            `pytest_plugins` assignment.
+            The module docstring of `pyrig_fixtures.rig.tests.conftest` followed
+            by a `pytest_plugins` assignment that registers that module as a
+            pytest plugin.
         """
-        return [*super().lines(), self.plugin_definition(), ""]
+        return f"{super().content()}\n{self.plugin_definition()}\n"
 
     def copy_module(self) -> ModuleType:
         """Return the source module whose docstring is written to the generated file.

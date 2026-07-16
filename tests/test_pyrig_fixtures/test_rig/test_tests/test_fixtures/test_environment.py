@@ -4,13 +4,14 @@ import platform
 from collections.abc import Callable
 
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.version_control.remote import (
+from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 
 
 def test_on_linux_and_latest_python_version(
-    *, on_linux_and_latest_python_version: bool
+    *,
+    on_linux_and_latest_python_version: bool,
 ) -> None:
     """Test function."""
     current_platform = platform.system()
@@ -54,7 +55,8 @@ def test_on_latest_python_version(*, on_latest_python_version: bool) -> None:
 
 
 def test_on_linux_and_latest_python_version_or_not_in_ci(
-    *, on_linux_and_latest_python_version_or_not_in_ci: bool
+    *,
+    on_linux_and_latest_python_version_or_not_in_ci: bool,
 ) -> None:
     """Test function."""
     in_ci = RemoteVersionController.I.running_in_ci()

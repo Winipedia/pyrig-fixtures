@@ -7,7 +7,8 @@ from types import ModuleType
 
 
 def test_create_module(
-    tmp_path: Path, create_module: Callable[[Path], ModuleType]
+    tmp_path: Path,
+    create_module: Callable[[Path], ModuleType],
 ) -> None:
     """Test function."""
     with chdir(tmp_path):
@@ -19,7 +20,8 @@ def test_create_module(
 
 
 def test_create_package(
-    tmp_path: Path, create_package: Callable[[Path], ModuleType]
+    tmp_path: Path,
+    create_package: Callable[[Path], ModuleType],
 ) -> None:
     """Test function."""
     with chdir(tmp_path):
@@ -31,7 +33,8 @@ def test_create_package(
 
 
 def test_create_source_package(
-    create_source_package: Callable[[Path], ModuleType], tmp_source_root_path: Path
+    create_source_package: Callable[[Path], ModuleType],
+    tmp_source_root_path: Path,
 ) -> None:
     """Test function."""
     path = Path("package/subpackge")

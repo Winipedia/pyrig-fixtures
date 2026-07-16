@@ -9,7 +9,7 @@ from collections.abc import Callable
 from types import FunctionType
 
 import pytest
-from pyrig.rig.tools.package_manager import PackageManager
+from pyrig.rig.tools.packages.manager import PackageManager
 from pytest_mock import MockerFixture
 
 

@@ -10,7 +10,7 @@ from collections.abc import Callable
 
 import pytest
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
-from pyrig.rig.tools.version_control.remote import (
+from pyrig.rig.tools.version_control.remote.controller import (
     RemoteVersionController,
 )
 
@@ -45,7 +45,9 @@ def on_linux(on_platform: Callable[[str], bool]) -> bool:
 
 @pytest.fixture(scope="session")
 def on_linux_and_latest_python_version(
-    *, on_linux: bool, on_latest_python_version: bool
+    *,
+    on_linux: bool,
+    on_latest_python_version: bool,
 ) -> bool:
     """Return whether the current environment is Linux with the latest Python version.
 
@@ -61,7 +63,8 @@ def on_linux_and_latest_python_version(
 
 @pytest.fixture(scope="session")
 def on_linux_and_latest_python_version_or_not_in_ci(
-    *, on_linux_and_latest_python_version: bool
+    *,
+    on_linux_and_latest_python_version: bool,
 ) -> bool:
     """Return whether tests that require a canonical environment should run.
 

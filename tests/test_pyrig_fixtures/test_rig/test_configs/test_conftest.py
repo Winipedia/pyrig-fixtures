@@ -36,8 +36,8 @@ class TestConftestConfigFile:
         """Test method."""
         assert ConftestConfigFile.I.stem() == "conftest"
 
-    def test_lines(self) -> None:
+    def test_content(self) -> None:
         """Test method."""
-        lines = ConftestConfigFile.I.lines()
-        content_str = "\n".join(lines)
-        assert ConftestConfigFile.I.plugin_definition() in content_str
+        assert (
+            ConftestConfigFile.I.plugin_definition() in ConftestConfigFile.I.content()
+        )
