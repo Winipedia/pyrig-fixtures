@@ -25,11 +25,24 @@ from pyrig_runtime.rig.cli.shared_subcommands import version
 
 
 @pytest.fixture
-def init_pyrig_project(  # noqa: PLR0911, PLR0915
+def init_pyrig_project(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> tuple[bool, str]:
     """Initialize a pyrig project and return a tuple indicating success or error."""
+    return run_init_pyrig_project(tmp_path, monkeypatch)
+
+
+def run_init_pyrig_project(  # noqa: PLR0911, PLR0915
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> tuple[bool, str]:
+    """Run the steps behind `init_pyrig_project` and report success or failure.
+
+    Extracted into a plain function, rather than inlined in the fixture, so
+    tests can call it directly with mocked subprocess results to exercise
+    each of its failure branches.
+    """
     # on Actions windows-latest temp path is on another drive so add path fails
     # so we use a tmp dir in the current dir
     # now test that in an empty folder with a pyproject.toml file
