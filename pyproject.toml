@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-fixtures"
-version = "2.15.0"
+version = "2.17.0"
 description = "A pyrig plugin that provides pytest fixtures support."
 readme = "README.md"
 requires-python = ">=3.12"

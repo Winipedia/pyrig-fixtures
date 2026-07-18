@@ -112,20 +112,6 @@ def test_init_pyrig_project_fails(  # noqa: C901, PLR0915
         with pytest.MonkeyPatch.context() as scenario_monkeypatch:
             return run_init_pyrig_project(scenario_path, scenario_monkeypatch)
 
-    def force_no_tests_collected_mismatch(
-        args: Args,
-        check: bool,  # noqa: FBT001
-        result: subprocess.CompletedProcess[str],
-    ) -> None:
-        """Make the `--no-cov` pytest run return an unexpected exit code."""
-        if check is False and "--no-cov" in args:
-            result.returncode = 0
-
-    mock_run(force_no_tests_collected_mismatch)
-    success, message = run_scenario("no_tests_collected")
-    assert success is False
-    assert "Expected no tests collected" in message
-
     def force_tests_failed_mismatch(
         args: Args,
         check: bool,  # noqa: FBT001

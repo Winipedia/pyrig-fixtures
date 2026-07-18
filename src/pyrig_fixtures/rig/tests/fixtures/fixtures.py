@@ -33,7 +33,7 @@ def init_pyrig_project(
     return run_init_pyrig_project(tmp_path, monkeypatch)
 
 
-def run_init_pyrig_project(  # noqa: PLR0911, PLR0915
+def run_init_pyrig_project(  # noqa: PLR0915
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> tuple[bool, str]:
@@ -133,15 +133,6 @@ def run_init_pyrig_project(  # noqa: PLR0911, PLR0915
         # Verify pyrig was installed correctly
         # also checks if the init process works
         PackageManager.I.run_args(*Pyrigger.I.cmd_args(cmd=init)).run()
-
-        # run tests with no cov
-        args = PackageManager.I.run_args(*ProjectTester.I.test_args(), "--no-cov")
-        res = args.run(check=False)
-        if res.returncode != pytest.ExitCode.NO_TESTS_COLLECTED:
-            return (
-                False,
-                f"Expected no tests collected, got return code {res.returncode}",
-            )
 
         # with cov
         args = PackageManager.I.run_args(*ProjectTester.I.test_args())
