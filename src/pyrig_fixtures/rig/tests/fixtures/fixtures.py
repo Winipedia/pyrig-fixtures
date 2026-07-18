@@ -7,7 +7,7 @@ sorted into one of the other themed fixture modules.
 import os
 import re
 import shutil
-from contextlib import chdir
+from contextlib import chdir, suppress
 from pathlib import Path
 
 import pyrig
@@ -24,13 +24,14 @@ from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 from pyrig_runtime.rig.cli.shared_subcommands import version
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def init_pyrig_project(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
+    tmp_path_factory: pytest.TempPathFactory,
 ) -> tuple[bool, str]:
     """Initialize a pyrig project and return a tuple indicating success or error."""
-    return run_init_pyrig_project(tmp_path, monkeypatch)
+    tmp_path = tmp_path_factory.mktemp(init_pyrig_project.__name__)
+    with pytest.MonkeyPatch.context() as monkeypatch:
+        return run_init_pyrig_project(tmp_path, monkeypatch)
 
 
 def run_init_pyrig_project(  # noqa: PLR0915
@@ -59,7 +60,7 @@ def run_init_pyrig_project(  # noqa: PLR0915
     with chdir(pyrig_tmp_path):
         # remove a potential dist dir from a previous build
         dist_dir = pyrig_tmp_path / "dist"
-        if dist_dir.exists():
+        with suppress(FileNotFoundError):
             shutil.rmtree(dist_dir)
         # build the package
         args = PackageManager.I.build_args()
