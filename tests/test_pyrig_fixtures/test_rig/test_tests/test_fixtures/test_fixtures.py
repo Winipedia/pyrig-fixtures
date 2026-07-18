@@ -1,5 +1,6 @@
 """Test module."""
 
+import inspect
 import shutil
 import subprocess
 from collections.abc import Callable, Iterator
@@ -11,7 +12,10 @@ from pyrig_runtime.core.strings import kebab_to_snake_case
 from pyrig_runtime.rig.cli.shared_subcommands import version
 from pytest_mock import MockerFixture
 
-from pyrig_fixtures.rig.tests.fixtures.fixtures import run_init_pyrig_project
+from pyrig_fixtures.rig.tests.fixtures.fixtures import (
+    init_pyrig_project,
+    run_init_pyrig_project,
+)
 
 
 def test_init_pyrig_project(init_pyrig_project: tuple[bool, str]) -> None:
@@ -20,9 +24,15 @@ def test_init_pyrig_project(init_pyrig_project: tuple[bool, str]) -> None:
     assert success, message
 
 
-def test_run_init_pyrig_project() -> None:
+def test_run_init_pyrig_project(mocker: MockerFixture) -> None:
     """Test function."""
-    assert callable(run_init_pyrig_project)
+    mock_init = mocker.patch(
+        run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
+        return_value=(True, "Simulated Success"),
+    )
+    inspect.unwrap(init_pyrig_project)()
+
+    mock_init.assert_called_once()
 
 
 def test_init_pyrig_project_fails(  # noqa: C901, PLR0915
@@ -181,3 +191,21 @@ def test_init_pyrig_project_fails(  # noqa: C901, PLR0915
     success, message = run_scenario("config_missing")
     assert success is False
     assert "Expected config file" in message
+
+
+def test_init_pyrig_project_raises(mocker: MockerFixture) -> None:
+    """Test function.
+
+    `init_pyrig_project` is a `@pytest.fixture`; calling it directly (rather
+    than via `__wrapped__`) would hit pytest's own "fixtures can't be called
+    directly" guard instead of exercising the fixture's own `pytest.fail`
+    call, silently skipping coverage of that branch.
+    """
+    mock_init = mocker.patch(
+        run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
+        return_value=(False, "Simulated failure"),
+    )
+    with pytest.raises(pytest.fail.Exception, match="Simulated failure"):
+        inspect.unwrap(init_pyrig_project)()
+
+    mock_init.assert_called_once()

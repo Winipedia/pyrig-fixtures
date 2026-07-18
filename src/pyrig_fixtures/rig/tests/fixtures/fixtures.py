@@ -9,6 +9,7 @@ import re
 import shutil
 from contextlib import chdir, suppress
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pyrig
 import pytest
@@ -25,13 +26,21 @@ from pyrig_runtime.rig.cli.shared_subcommands import version
 
 
 @pytest.fixture(scope="session", autouse=True)
-def init_pyrig_project(
-    tmp_path_factory: pytest.TempPathFactory,
-) -> tuple[bool, str]:
+def init_pyrig_project() -> tuple[bool, str]:
     """Initialize a pyrig project and return a tuple indicating success or error."""
-    tmp_path = tmp_path_factory.mktemp(init_pyrig_project.__name__)
-    with pytest.MonkeyPatch.context() as monkeypatch:
-        return run_init_pyrig_project(tmp_path, monkeypatch)
+    # This scaffolds a full project (venv, wheel, git repo, ~1GB); use a
+    # plain TemporaryDirectory rather than pytest's tmp_path_factory so it's
+    # deleted the moment we're done with it, on both success and failure,
+    # instead of sitting in pytest's shared tmp dir.
+    with (
+        TemporaryDirectory() as tmp_dir,
+        pytest.MonkeyPatch.context() as monkeypatch,
+    ):
+        success, msg = run_init_pyrig_project(Path(tmp_dir), monkeypatch)
+
+    if not success:
+        pytest.fail(f"Failed to initialize pyrig project: {msg}")
+    return success, msg
 
 
 def run_init_pyrig_project(  # noqa: PLR0915
