@@ -13,7 +13,10 @@ from pyrig_runtime.rig.cli.shared_subcommands import version
 from pytest_mock import MockerFixture
 
 from pyrig_fixtures.rig.tests.fixtures.fixtures import (
+    SKIP_INIT_PYRIG_PROJECT_FLAG,
+    SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG,
     init_pyrig_project,
+    pytest_addoption,
     run_init_pyrig_project,
 )
 
@@ -30,9 +33,31 @@ def test_run_init_pyrig_project(mocker: MockerFixture) -> None:
         run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
         return_value=(True, "Simulated Success"),
     )
-    inspect.unwrap(init_pyrig_project)()
+    request = mocker.MagicMock(spec=pytest.FixtureRequest)
+    request.config.getoption.return_value = False
+
+    inspect.unwrap(init_pyrig_project)(request)
 
     mock_init.assert_called_once()
+
+
+def test_init_pyrig_project_skipped(mocker: MockerFixture) -> None:
+    """Test function.
+
+    Covers the `--skip-init-pyrig-project` opt-out: the real, slow
+    `run_init_pyrig_project` flow must not run at all when the flag is set.
+    """
+    mock_init = mocker.patch(
+        run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
+    )
+    request = mocker.MagicMock(spec=pytest.FixtureRequest)
+    request.config.getoption.return_value = True
+
+    result = inspect.unwrap(init_pyrig_project)(request)
+
+    assert result == (True, f"Skipped via {SKIP_INIT_PYRIG_PROJECT_FLAG}")
+    request.config.getoption.assert_called_once_with(SKIP_INIT_PYRIG_PROJECT_FLAG)
+    mock_init.assert_not_called()
 
 
 def test_init_pyrig_project_fails(  # noqa: C901, PLR0915
@@ -205,7 +230,22 @@ def test_init_pyrig_project_raises(mocker: MockerFixture) -> None:
         run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
         return_value=(False, "Simulated failure"),
     )
+    request = mocker.MagicMock(spec=pytest.FixtureRequest)
+    request.config.getoption.return_value = False
+
     with pytest.raises(pytest.fail.Exception, match="Simulated failure"):
-        inspect.unwrap(init_pyrig_project)()
+        inspect.unwrap(init_pyrig_project)(request)
 
     mock_init.assert_called_once()
+
+
+def test_pytest_addoption(mocker: MockerFixture) -> None:
+    """Test function."""
+    parser = mocker.MagicMock(spec=pytest.Parser)
+
+    pytest_addoption(parser)
+
+    args, kwargs = parser.addoption.call_args
+    assert args == (SKIP_INIT_PYRIG_PROJECT_FLAG, SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG)
+    assert kwargs["action"] == "store_true"
+    assert kwargs["default"] is False

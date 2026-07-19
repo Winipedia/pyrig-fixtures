@@ -24,14 +24,41 @@ from pyrig_runtime.core.dependencies.discovery import dependency_ancestors
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 from pyrig_runtime.rig.cli.shared_subcommands import version
 
+SKIP_INIT_PYRIG_PROJECT_FLAG_NAME = "skip-init-pyrig-project"
+
+SKIP_INIT_PYRIG_PROJECT_FLAG = f"--{SKIP_INIT_PYRIG_PROJECT_FLAG_NAME}"
+SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG = (
+    f"--{''.join(part[0] for part in SKIP_INIT_PYRIG_PROJECT_FLAG_NAME.split('-'))}"
+)
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register the `--skip-init-pyrig-project` command-line flag.
+
+    `init_pyrig_project` is an expensive, autouse, session-scoped end-to-end
+    check (wheel build, git init, `uv sync`, nested test run) that every
+    project depending on pyrig-fixtures runs once per test session. This flag
+    lets a run opt out of it, e.g. for a fast local feedback loop.
+
+    A true single-dash short form (e.g. `-sipp`) isn't possible: pytest
+    reserves lowercase single-dash options for its own core and rejects them
+    from plugins, so `--sipp` is offered as the short alias instead.
+    """
+    parser.addoption(
+        SKIP_INIT_PYRIG_PROJECT_FLAG,
+        SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG,
+        action="store_true",
+        default=False,
+        help="Skip the slow `init_pyrig_project` end-to-end fixture.",
+    )
+
 
 @pytest.fixture(scope="session", autouse=True)
-def init_pyrig_project() -> tuple[bool, str]:
+def init_pyrig_project(request: pytest.FixtureRequest) -> tuple[bool, str]:
     """Initialize a pyrig project and return a tuple indicating success or error."""
-    # This scaffolds a full project (venv, wheel, git repo, ~1GB); use a
-    # plain TemporaryDirectory rather than pytest's tmp_path_factory so it's
-    # deleted the moment we're done with it, on both success and failure,
-    # instead of sitting in pytest's shared tmp dir.
+    if request.config.getoption(SKIP_INIT_PYRIG_PROJECT_FLAG):
+        return True, f"Skipped via {SKIP_INIT_PYRIG_PROJECT_FLAG}"
+
     with (
         TemporaryDirectory() as tmp_dir,
         pytest.MonkeyPatch.context() as monkeypatch,
@@ -53,11 +80,6 @@ def run_init_pyrig_project(  # noqa: PLR0915
     tests can call it directly with mocked subprocess results to exercise
     each of its failure branches.
     """
-    # on Actions windows-latest temp path is on another drive so add path fails
-    # so we use a tmp dir in the current dir
-    # now test that in an empty folder with a pyproject.toml file
-    # with a folder src that the setup works
-
     # copy the pyrig package to tmp_path/pyrig with shutil
     project_name = "src-project"
 
