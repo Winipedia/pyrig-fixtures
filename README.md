@@ -62,6 +62,9 @@ available automatically in every project that installs it.
   depends on pyrig-fixtures contributes its own fixtures the same way.
 - **A scaffolding command** — `pyrig mk fixture <name>` adds a new fixture stub
   to your project's shared fixtures module.
+- **An end-to-end init check** — an autouse fixture that starts a new pyrig project
+with `pyrig init` and checks that it works if your project was added as a plugin.
+Skip it with `pytest --skip-pyrig-fixtures-init-check` flag.
 
 ## Usage
 

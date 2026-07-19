@@ -83,6 +83,18 @@ shared fixtures module under `rig/tests/fixtures/`, creating it if needed — a
 discovered location, so the new fixture is registered and available
 automatically.
 
+### End-to-end project initialization check
+
+`init_pyrig_project` is a session-scoped, autouse fixture contributed by
+pyrig-fixtures itself, so every project that depends on it runs it once per
+test session automatically. It exercises the full pyrig lifecycle end to end:
+building the package as a wheel, initializing a scratch project with it
+installed as a pyrig plugin, and verifying that everything works as intended.
+
+Because it does a real build, git init, and `uv sync`, it's slow. Pass
+`--skip-init-pyrig-project` (or its short alias `--sipp`) to skip it for a
+faster local feedback loop.
+
 ## API Reference
 
 For class- and method-level details, see the [API Reference](api.md), generated
