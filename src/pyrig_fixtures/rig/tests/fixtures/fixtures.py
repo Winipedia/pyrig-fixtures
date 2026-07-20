@@ -20,7 +20,7 @@ from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.controller import VersionController
-from pyrig_runtime.core.dependencies.discovery import dependency_ancestors
+from pyrig_runtime.core.dependencies.discovery import discover_dependent_packages
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 from pyrig_runtime.rig.cli.shared_subcommands import version
 
@@ -136,7 +136,8 @@ def run_init_pyrig_project(  # noqa: PLR0915
 
         # Add pyrig wheel as a dev dependency and plugins
         plugins = tuple(
-            snake_to_kebab_case(dep.__name__) for dep in dependency_ancestors(pyrig)
+            snake_to_kebab_case(dep.__name__)
+            for dep in discover_dependent_packages(pyrig)
         )
 
         # add plugins
