@@ -11,7 +11,7 @@ from contextlib import chdir, suppress
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-import pyrig
+import pyrig_runtime
 import pytest
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -20,7 +20,7 @@ from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.controller import VersionController
-from pyrig_runtime.core.dependencies.discovery import discover_dependent_packages
+from pyrig_runtime.core.dependencies.discovery import dependent_packages
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
 from pyrig_runtime.rig.cli.shared_subcommands import version
 
@@ -80,27 +80,26 @@ def run_init_pyrig_project(  # noqa: PLR0915
     tests can call it directly with mocked subprocess results to exercise
     each of its failure branches.
     """
-    # copy the pyrig package to tmp_path/pyrig with shutil
-    project_name = "src-project"
+    src_project_name = "src-project"
 
-    pyrig_tmp_path = tmp_path / PackageManager.I.project_name()
+    pyrig_project_tmp_path = tmp_path / PackageManager.I.project_name()
     shutil.copytree(
         Path(),
-        pyrig_tmp_path,
+        pyrig_project_tmp_path,
     )
-    with chdir(pyrig_tmp_path):
+    with chdir(pyrig_project_tmp_path):
         # remove a potential dist dir from a previous build
-        dist_dir = pyrig_tmp_path / "dist"
+        dist_dir = pyrig_project_tmp_path / "dist"
         with suppress(FileNotFoundError):
             shutil.rmtree(dist_dir)
         # build the package
         args = PackageManager.I.build_args()
         args.run()
 
-    dist_files = list((pyrig_tmp_path / "dist").glob("*.whl"))
+    dist_files = list((pyrig_project_tmp_path / "dist").glob("*.whl"))
     wheel_path = dist_files[-1].resolve().as_posix()
 
-    src_project_dir = tmp_path / project_name
+    src_project_dir = tmp_path / src_project_name
     src_project_dir.mkdir()
 
     # Get the current Python version in major.minor format
@@ -137,15 +136,16 @@ def run_init_pyrig_project(  # noqa: PLR0915
         # Add pyrig wheel as a dev dependency and plugins
         plugins = tuple(
             snake_to_kebab_case(dep.__name__)
-            for dep in discover_dependent_packages(pyrig)
+            for dep in dependent_packages(pyrig_runtime)
+            # wheel path is the package name, so don't add it as a dependency twice
+            if dep.__name__ != PackageManager.I.package_name()
         )
 
         # add plugins
         PackageManager.I.add_dev_dependencies_args(wheel_path, *plugins).run()
 
         # uv add converts absolute paths to relative paths, which breaks when
-        # the project is copied to a different location (e.g., in the
-        # no_dev_deps_in_source_code fixture). We need to replace the
+        # the project is copied to a different location. We need to replace the
         # relative path with an absolute path.
         pyproject_toml = src_project_dir / "pyproject.toml"
         pyproject_content = pyproject_toml.read_text(encoding="utf-8")
@@ -174,10 +174,10 @@ def run_init_pyrig_project(  # noqa: PLR0915
             return False, f"Expected tests to fail, got return code {res.returncode}"
 
         # assert the packages own cli is available
-        args = PackageManager.I.run_args(project_name, "--help")
+        args = PackageManager.I.run_args(src_project_name, "--help")
         res = args.run()
         stdout = res.stdout
-        expected = project_name
+        expected = src_project_name
         if expected not in stdout.lower():
             return (
                 False,
@@ -185,17 +185,17 @@ def run_init_pyrig_project(  # noqa: PLR0915
             )
 
         # assert calling version works
-        args = PackageManager.I.run_args(project_name, version.__name__)
+        args = PackageManager.I.run_args(src_project_name, version.__name__)
         res = args.run()
         stdout = res.stdout
-        expected = f"{project_name} 0.1.0"
+        expected = f"{src_project_name} 0.1.0"
         if expected not in stdout:
             return (
                 False,
                 f"Expected the projects version command to output '{expected}'",
             )
 
-        package_dir = src_project_dir / "src" / kebab_to_snake_case(project_name)
+        package_dir = src_project_dir / "src" / kebab_to_snake_case(src_project_name)
         if not package_dir.exists():
             return (
                 False,
