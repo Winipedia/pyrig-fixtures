@@ -1,6 +1,6 @@
 """test module."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from types import FunctionType
 
 from pyrig_runtime.rig.cli.commands.version import project_version
@@ -13,7 +13,7 @@ def test_command_works(command_works: Callable[[FunctionType], bool]) -> None:
 
 
 def test_command_calls_function(
-    command_calls_function: Callable[[FunctionType, FunctionType], bool],
+    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
-    assert command_calls_function(version, project_version)
+    assert command_calls_function(version, project_version, [])

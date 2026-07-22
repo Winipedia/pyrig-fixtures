@@ -1,6 +1,6 @@
 """module."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from contextlib import chdir
 from pathlib import Path
 from types import FunctionType
@@ -13,7 +13,7 @@ from pyrig_fixtures.rig.cli.commands.make.fixture import make_fixture
 
 
 def test_fixture(
-    command_calls_function: Callable[[FunctionType, FunctionType], bool],
+    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
     result = Args(
@@ -21,7 +21,7 @@ def test_fixture(
     ).run(check=False)
     assert result.returncode == 0
 
-    assert command_calls_function(fixture, make_fixture)
+    assert command_calls_function(fixture, make_fixture, ["my-new-fixture"])
 
 
 def test_make_fixture(tmp_path: Path) -> None:

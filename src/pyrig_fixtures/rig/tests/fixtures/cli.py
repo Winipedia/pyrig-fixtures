@@ -5,18 +5,21 @@ reachable, and whether a command delegates to its expected implementation
 function.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from types import FunctionType
 
 import pytest
 from pyrig.rig.tools.packages.manager import PackageManager
+from pyrig_runtime.core.strings import snake_to_kebab_case
+from pyrig_runtime.rig.cli.cli import CLI
 from pytest_mock import MockerFixture
+from typer.testing import CliRunner
 
 
 @pytest.fixture
 def command_calls_function(
     mocker: MockerFixture,
-) -> Callable[[FunctionType, FunctionType], bool]:
+) -> Callable[[FunctionType, FunctionType, Iterable[str]], bool]:
     """Return a callable that verifies a CLI command delegates to the expected function.
 
     The returned function patches the target function by its fully qualified
@@ -31,10 +34,16 @@ def command_calls_function(
         `function` exactly once, False otherwise.
     """
 
-    def check(cmd: FunctionType, function: FunctionType) -> bool:
+    def check(
+        cmd: FunctionType,
+        function: FunctionType,
+        args: Iterable[str],
+    ) -> bool:
         """Run `cmd` and return True if it calls `function` exactly once."""
         mock = mocker.patch(function.__module__ + "." + function.__name__)
-        cmd()
+        app = CLI.I.app()
+        app.command()(cmd)
+        CliRunner().invoke(app, [snake_to_kebab_case(cmd.__name__), *(args or [])])
         return mock.call_count == 1
 
     return check
