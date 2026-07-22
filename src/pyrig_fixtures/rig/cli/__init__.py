@@ -1,12 +1,14 @@
 """CLI commands that pyrig-fixtures adds to the `mk` scaffolding command group."""
 
+from typing import Annotated
+
 import typer
 from pyrig.rig.cli.subcommands import mk
 
 
 @mk.command()
 def fixture(
-    name: str = typer.Argument(help="Name of the fixture to create."),
+    name: Annotated[str, typer.Argument(help="Name of the fixture to create.")],
 ) -> None:
     """Scaffold a new pytest fixture stub in the project's shared fixtures module.
 
