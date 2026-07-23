@@ -67,6 +67,6 @@ def tmp_source_root_path(tmp_project_root_path: Path) -> Path:
     Returns:
         Path to the temporary source root directory.
     """
-    path = tmp_project_root_path / PackageManager.I.package_root().parent
+    path = tmp_project_root_path / PackageManager.I.source_root()
     path.mkdir()
     return path
