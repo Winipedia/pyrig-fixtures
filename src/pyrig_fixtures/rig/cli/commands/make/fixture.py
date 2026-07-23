@@ -1,7 +1,7 @@
 """Scaffolding for shared pytest fixtures in a pyrig-managed project."""
 
 import pytest
-from pyrig.rig.configs.base.copy_module_docstring import (
+from pyrig.rig.configs.base.copy_module import (
     CopyModuleDocstringConfigFile,
 )
 from pyrig_runtime.core.strings import kebab_to_snake_case
