@@ -105,6 +105,9 @@ testpaths = [
 docstring-code-format = true
 
 [tool.ruff.lint]
+ignore = [
+  "CPY001",
+]
 select = [
   "ALL",
 ]
