@@ -20,7 +20,8 @@ def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
     """Return whether the running Python version matches the latest stable release.
 
     Args:
-        on_python_version: Fixture for checking the current Python version.
+        on_python_version: Callable that checks whether a given version string
+            exactly matches the running Python version.
 
     Returns:
         True if the current Python micro version matches the latest stable
@@ -35,7 +36,8 @@ def on_linux(on_platform: Callable[[str], bool]) -> bool:
     """Return whether the current system is Linux.
 
     Args:
-        on_platform: Fixture for checking the current platform by name.
+        on_platform: Callable that checks whether a given platform name
+            exactly matches the current system platform.
 
     Returns:
         True if the system is Linux.
@@ -53,7 +55,8 @@ def on_linux_and_latest_python_version(
 
     Args:
         on_linux: Whether the current system is Linux.
-        on_latest_python_version: Whether the current Python version is the latest.
+        on_latest_python_version: Whether the running Python version matches
+            the latest stable release.
 
     Returns:
         True if both conditions are met.
@@ -68,17 +71,13 @@ def on_linux_and_latest_python_version_or_not_in_ci(
 ) -> bool:
     """Return whether tests that require a canonical environment should run.
 
-    True when running on Linux with the latest Python version, or when not
-    running in CI at all. This is used to gate environment-sensitive tests,
-    allowing them to always run locally while restricting them to the
-    canonical CI environment in GitHub Actions.
-
     Args:
         on_linux_and_latest_python_version: Whether the environment is Linux
             with the latest Python version.
 
     Returns:
-        True if the canonical CI conditions are met, or if not running in CI.
+        True if the environment is Linux with the latest Python version, or
+        if not currently running inside GitHub Actions.
     """
     return (
         on_linux_and_latest_python_version
@@ -87,11 +86,12 @@ def on_linux_and_latest_python_version_or_not_in_ci(
 
 @pytest.fixture(scope="session")
 def on_platform() -> Callable[[str], bool]:
-    """Check if the current system platform matches a given name.
+    """Check whether the current system platform exactly matches a given name.
 
     Returns:
-        A callable `(platform_name) -> bool` that compares `platform.system()`
-        against the given name (e.g., `"Linux"`, `"Windows"`, `"Darwin"`).
+        A callable `(platform_name) -> bool` that returns `True` only when
+        `platform_name` exactly equals `platform.system()` (e.g., `"Linux"`,
+        `"Windows"`, `"Darwin"`).
     """
 
     def check(platform_name: str) -> bool:
@@ -102,11 +102,11 @@ def on_platform() -> Callable[[str], bool]:
 
 @pytest.fixture(scope="session")
 def on_python_version() -> Callable[[str], bool]:
-    """Check if the current Python version matches a given version string.
+    """Check whether the current Python version exactly matches a given version string.
 
     Returns:
-        A callable `(version) -> bool` that compares `platform.python_version()`
-        against the given version string (e.g., `"3.13.2"`).
+        A callable `(version) -> bool` that returns `True` only when `version`
+        exactly equals `platform.python_version()` (e.g., `"3.13.2"`).
     """
 
     def check(version: str) -> bool:

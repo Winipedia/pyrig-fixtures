@@ -22,19 +22,26 @@ from pyrig.core.introspection.paths import path_as_module_name
 
 @pytest.fixture
 def create_module() -> Callable[[Path], ModuleType]:
-    """Return a callable that creates a Python module at a given path.
-
-    The returned function ensures the parent directory is a proper package
-    hierarchy (adding `__init__.py` files up to the current working
-    directory), touches the module file, and imports it.
+    """Return a callable that creates and imports an empty Python module.
 
     Returns:
-        A callable `(path) -> ModuleType` that creates and imports an empty
-        module at `path`.
+        A callable that creates an empty module file and imports it,
+        initializing any missing parent directories as a package hierarchy
+        first.
     """
 
     def create(path: Path) -> ModuleType:
-        """Create and import an empty module at `path`."""
+        """Create an empty module file at `path` and import it.
+
+        Args:
+            path: Path to the module file, relative to the current working
+                directory. Missing parent directories are created and given
+                `__init__.py` files up to the current working directory.
+                The imported module's dotted name is derived from this path.
+
+        Returns:
+            The imported module, empty of any definitions.
+        """
         make_package_dir(path.parent, root=Path(), content="")
         path.touch()
         return import_module_with_file_fallback(path, name=path_as_module_name(path))
@@ -44,19 +51,26 @@ def create_module() -> Callable[[Path], ModuleType]:
 
 @pytest.fixture
 def create_package() -> Callable[[Path], ModuleType]:
-    """Return a callable that creates a Python package at a given path.
-
-    The returned function initializes the full directory tree as a package
-    hierarchy by adding `__init__.py` files up to the current working
-    directory, then imports and returns the package.
+    """Return a callable that creates and imports an empty Python package.
 
     Returns:
-        A callable `(path) -> ModuleType` that creates and imports an empty
-        package at `path`.
+        A callable that creates a directory tree as an empty package
+        hierarchy and imports the deepest package.
     """
 
     def create(path: Path) -> ModuleType:
-        """Create and import an empty package at `path`."""
+        """Create an empty package directory at `path` and import it.
+
+        Args:
+            path: Path to the package directory, relative to the current
+                working directory. `path` and every ancestor directory up to
+                the current working directory are created and given
+                `__init__.py` files. The imported package's dotted name is
+                derived from this path.
+
+        Returns:
+            The imported package, empty of any definitions.
+        """
         make_package_dir(path, root=Path(), content="")
         return import_module_with_file_fallback(path, name=path_as_module_name(path))
 
@@ -68,19 +82,28 @@ def create_source_package(
     tmp_source_root_path: Path,
     create_package: Callable[[Path], ModuleType],
 ) -> Callable[[Path], ModuleType]:
-    """Return a callable that creates a Python package under the temporary source root.
+    """Return a callable that creates and imports a package under the source root.
 
     Args:
-        tmp_source_root_path: Temporary source root directory.
+        tmp_source_root_path: Temporary source root directory that paths
+            passed to the returned callable are resolved against.
         create_package: Fixture that creates and imports a package.
 
     Returns:
-        A callable `(path) -> ModuleType` that creates and imports an empty
-        package at `path` relative to the temporary source root.
+        A callable that creates an empty package under the temporary source
+        root and imports it.
     """
 
     def create(path: Path) -> ModuleType:
-        """Create and import an empty package at `path` relative to the source root."""
+        """Create an empty package at `path` under the source root and import it.
+
+        Args:
+            path: Path to the package directory, relative to the temporary
+                source root directory.
+
+        Returns:
+            The imported package, empty of any definitions.
+        """
         with chdir(tmp_source_root_path):
             return create_package(path)
 

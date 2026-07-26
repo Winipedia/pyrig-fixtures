@@ -25,19 +25,16 @@ class ConftestConfigFile(CopyModuleDocstringConfigFile):
     """
 
     def is_correct(self) -> bool:
-        """Return whether the generated conftest.py is considered valid.
-
-        The file is valid if the conftest module name is registered in the
-        `pytest_plugins` list of the file on disk.
+        """Return whether the conftest module is already registered as a pytest plugin.
 
         Returns:
-            `True` if the conftest module name is present in the
-            `pytest_plugins` list of the file on disk.
+            `True` if `pyrig_fixtures.rig.tests.conftest`'s dotted name is
+            listed in the `pytest_plugins` list of the file currently on disk.
         """
         return conftest.__name__ in getattr(self.module(), "pytest_plugins", [])
 
     def content(self) -> str:
-        """Return the content of the generated conftest.py as a string.
+        """Return the generated `conftest.py` file's content.
 
         Returns:
             The module docstring of `pyrig_fixtures.rig.tests.conftest` followed
@@ -47,23 +44,15 @@ class ConftestConfigFile(CopyModuleDocstringConfigFile):
         return f"{super().content()}\n{self.plugin_definition()}\n"
 
     def copy_module(self) -> ModuleType:
-        """Return the source module whose docstring is written to the generated file.
-
-        Returns:
-            `pyrig_fixtures.rig.tests.conftest`
-        """
+        """Return the `pyrig_fixtures.rig.tests.conftest` module."""
         return conftest
 
     def parent_path(self) -> Path:
-        """Return the root directory of the tests package.
-
-        Returns:
-            Path to the tests package root, e.g. `Path("tests")`.
-        """
+        """Return the tests package root as the generated file's parent directory."""
         return self.package_root()
 
     def package_root(self) -> Path:
-        """Override to return the root directory of the tests package."""
+        """Return the tests package root rather than the source package root."""
         return ProjectTester.I.package_root()
 
     def stem(self) -> str:
@@ -78,6 +67,6 @@ class ConftestConfigFile(CopyModuleDocstringConfigFile):
         """Return the `pytest_plugins` assignment line for the generated file.
 
         Returns:
-            String of the form `'pytest_plugins = ["<conftest_module_name>"]'`.
+            `'pytest_plugins = ["pyrig_fixtures.rig.tests.conftest"]'`.
         """
         return f'pytest_plugins = ["{conftest.__name__}"]'

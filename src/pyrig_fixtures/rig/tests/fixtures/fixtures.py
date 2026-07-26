@@ -35,14 +35,16 @@ SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG = (
 def pytest_addoption(parser: pytest.Parser) -> None:
     """Register the `--skip-init-pyrig-project` command-line flag.
 
-    `init_pyrig_project` is an expensive, autouse, session-scoped end-to-end
-    check (wheel build, git init, `uv sync`, nested test run) that every
-    project depending on pyrig-fixtures runs once per test session. This flag
-    lets a run opt out of it, e.g. for a fast local feedback loop.
+    The flag lets a run opt out of the expensive [init_pyrig_project][]
+    fixture that every project depending on pyrig-fixtures otherwise runs
+    once per test session, e.g. for a fast local feedback loop.
 
     A true single-dash short form (e.g. `-sipp`) isn't possible: pytest
-    reserves lowercase single-dash options for its own core and rejects them
-    from plugins, so `--sipp` is offered as the short alias instead.
+    reserves lowercase single-dash options for its own core and rejects
+    them from plugins, so `--sipp` is offered as the short alias instead.
+
+    Args:
+        parser: Pytest's parser to register the command-line option on.
     """
     parser.addoption(
         SKIP_INIT_PYRIG_PROJECT_FLAG,
@@ -55,7 +57,29 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 
 @pytest.fixture(scope="session", autouse=True)
 def init_pyrig_project(request: pytest.FixtureRequest) -> tuple[bool, str]:
-    """Initialize a pyrig project and return a tuple indicating success or error."""
+    """Verify that this project can be built and adopted by a fresh consumer project.
+
+    Delegates the actual build, install, and verification flow to
+    [run_init_pyrig_project][], once per test session, in an isolated
+    temporary directory. Skipped when `--skip-init-pyrig-project` is
+    passed.
+
+    Args:
+        request: Used to read the `--skip-init-pyrig-project` option.
+
+    Returns:
+        A tuple of `(success, message)`, where `success` is always `True`
+        since a failed check raises instead of returning. `message`
+        explains why the run was skipped, or is empty when it ran and
+        succeeded.
+
+    Raises:
+        pytest.fail.Exception: If the check does not succeed.
+
+    Note:
+        Being autouse and session-scoped, a failed check reports a setup
+        error for every test in the session, not just one.
+    """
     if request.config.getoption(SKIP_INIT_PYRIG_PROJECT_FLAG):
         return True, f"Skipped via {SKIP_INIT_PYRIG_PROJECT_FLAG}"
 
@@ -74,11 +98,40 @@ def run_init_pyrig_project(  # noqa: PLR0915
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> tuple[bool, str]:
-    """Run the steps behind `init_pyrig_project` and report success or failure.
+    """Build this project and verify a fresh consumer project can adopt it.
 
-    Extracted into a plain function, rather than inlined in the fixture, so
-    tests can call it directly with mocked subprocess results to exercise
-    each of its failure branches.
+    Packages the current project as a wheel and scaffolds a brand-new
+    project under `tmp_path`, adding the wheel plus every other
+    currently-installed plugin that depends on pyrig-runtime as dev
+    dependencies. Runs `pyrig init` in the new project, then checks that
+    its own test suite fails as expected, that its CLI and `version`
+    command produce the expected output, that the expected package
+    directory was generated, and that every `ConfigFile` subclass
+    produced its file. Finally runs `pyrigger --help` as a last sanity
+    check.
+
+    Kept as a standalone function, separate from [init_pyrig_project][],
+    so tests can call it directly with mocked subprocess results to
+    exercise each failure branch independently.
+
+    Args:
+        tmp_path: Scratch directory to scaffold the wheel-build copy of
+            this project and the new consumer project under; must not
+            already contain directories with their names.
+        monkeypatch: Used to remove the current virtual environment from
+            the environment for the duration of the run, so subprocess
+            commands create and use their own fresh environment instead
+            of reusing the caller's.
+
+    Returns:
+        A tuple of `(success, message)`. `success` is `True` only if
+        every check above passes; `message` describes the first check
+        that failed, or is empty when `success` is `True`.
+
+    Raises:
+        subprocess.CalledProcessError: If any underlying command fails,
+            other than the new project's own test suite exiting as
+            expected.
     """
     src_project_name = "src-project"
 

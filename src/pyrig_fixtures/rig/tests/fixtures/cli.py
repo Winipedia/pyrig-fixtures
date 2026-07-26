@@ -20,18 +20,20 @@ from typer.testing import CliRunner
 def command_calls_function(
     mocker: MockerFixture,
 ) -> Callable[[FunctionType, FunctionType, Iterable[str]], bool]:
-    """Return a callable that verifies a CLI command delegates to the expected function.
+    """Return a callable that verifies a CLI command delegates to a function.
 
-    The returned function patches the target function by its fully qualified
-    name, invokes the command, and checks whether the patch was called
-    exactly once.
+    The returned callable registers `cmd` on a freshly built CLI app, patches
+    `function` where it is defined, invokes `cmd` through the CLI with
+    `args`, and reports whether the patch was called exactly once. Whether
+    the invocation itself succeeds is not checked.
 
     Args:
-        mocker: pytest-mock fixture for patching.
+        mocker: pytest-mock fixture used to patch `function`.
 
     Returns:
-        A callable `(cmd, function) -> bool` that returns True if `cmd` calls
-        `function` exactly once, False otherwise.
+        A callable `(cmd, function, args) -> bool` that returns `True` if
+        `function` is called exactly once while `cmd` runs with `args`,
+        `False` otherwise.
     """
 
     def check(
@@ -39,7 +41,7 @@ def command_calls_function(
         function: FunctionType,
         args: Iterable[str],
     ) -> bool:
-        """Run `cmd` and return True if it calls `function` exactly once."""
+        """Run `cmd` with `args`; return whether `function` was called exactly once."""
         mock = mocker.patch(function.__module__ + "." + function.__name__)
         app = CLI.I.app()
         app.command()(cmd)
@@ -51,14 +53,19 @@ def command_calls_function(
 
 @pytest.fixture
 def command_works() -> Callable[[FunctionType], bool]:
-    """Return a callable that verifies a CLI command is registered and executable.
+    """Return a callable that verifies a CLI command is registered and reachable.
 
-    The returned function runs the command with `--help` and checks whether
-    the command executes successfully and its name appears in stdout.
+    The returned callable runs `cmd` as a subcommand of the project's CLI
+    with `--help` and checks whether its kebab-case name appears in stdout.
 
     Returns:
-        A callable `(cmd) -> bool` that accepts a CLI function and returns
-        True if it is reachable and produces help output, False otherwise.
+        A callable `(cmd) -> bool` that returns `True` if `cmd`'s kebab-case
+        name appears in the `--help` output, `False` otherwise.
+
+    Raises:
+        subprocess.CalledProcessError: If invoking `cmd` with `--help` exits
+            with a non-zero status, for example because `cmd` is not
+            registered as a subcommand of the project's CLI.
     """
 
     def check(cmd: FunctionType) -> bool:

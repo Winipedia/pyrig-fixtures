@@ -27,8 +27,8 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
         tmp_path: Pytest's per-test temporary directory.
 
     Returns:
-        A callable that accepts a `ConfigFile` subclass and returns a
-        test-safe subclass with `tmp_path`-based file operations.
+        A callable `(base_class) -> type[T]` that wraps `base_class` in a
+        subclass whose file operations are redirected to `tmp_path`.
     """
 
     def _make_test_config(
@@ -63,11 +63,13 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
                     super().create_file()
 
             def path(self) -> Path:
-                """Return the config file path, relocated under `tmp_path`.
+                """Return the config file path, rooted under `tmp_path`.
 
                 Returns:
-                    The path from the parent implementation, guaranteed to
-                    resolve to a location under `tmp_path`.
+                    The parent implementation's path unchanged if it already
+                    resolves under `tmp_path` (as when called while the
+                    working directory is `tmp_path`); otherwise that path
+                    joined onto `tmp_path`.
                 """
                 path = super().path()
                 if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):

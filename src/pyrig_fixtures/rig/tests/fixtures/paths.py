@@ -1,8 +1,8 @@
-"""Shared pytest fixtures providing temporary project/source/package roots.
+"""Fixtures for building a temporary project/source/package directory tree.
 
-Builds a temporary directory tree mirroring the project's layout (project root
-→ source root → package root) so tests can operate on a realistic, isolated
-copy of the project structure.
+Provides an empty, disposable instance of this ecosystem's conventional src
+layout (project root → source root → package root), so tests can exercise
+path-sensitive logic without touching the real project on disk.
 """
 
 from collections.abc import Callable
@@ -19,20 +19,17 @@ def tmp_package_root_path(
     tmp_source_root_path: Path,
     create_source_package: Callable[[Path], ModuleType],
 ) -> tuple[Path, ModuleType]:
-    """Provide the temporary package root directory and its imported package module.
-
-    Creates the package root directory under the temporary source root,
-    initializes it as a Python package, and returns both the path and the
-    imported module.
+    """Provide the temporary package root, already created and imported as a package.
 
     Args:
         tmp_project_root_path: Temporary project root directory.
         tmp_source_root_path: Temporary source root directory.
-        create_source_package: Fixture for creating packages in the source root.
+        create_source_package: Callable that creates and imports a package at
+            a path relative to the temporary source root.
 
     Returns:
-        Tuple of `(path, package)` where `path` is the package root
-        directory and `package` is the imported package module.
+        Tuple of `(path, package)`: the package root directory nested inside
+        the temporary source root, and its imported package module.
     """
     path = tmp_project_root_path / PackageManager.I.package_root()
 
@@ -48,7 +45,7 @@ def tmp_project_root_path(tmp_path: Path) -> Path:
         tmp_path: Pytest's per-test temporary directory.
 
     Returns:
-        Path to the temporary project root directory.
+        Path to the temporary project root directory, already created on disk.
     """
     path = tmp_path / PackageManager.I.project_name()
     path.mkdir()
@@ -57,15 +54,13 @@ def tmp_project_root_path(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def tmp_source_root_path(tmp_project_root_path: Path) -> Path:
-    """Provide the temporary source root directory.
-
-    Creates the source root directory inside the temporary project root.
+    """Provide a temporary source root directory nested inside the project root.
 
     Args:
         tmp_project_root_path: Temporary project root directory.
 
     Returns:
-        Path to the temporary source root directory.
+        Path to the temporary source root directory, already created on disk.
     """
     path = tmp_project_root_path / PackageManager.I.source_root()
     path.mkdir()
