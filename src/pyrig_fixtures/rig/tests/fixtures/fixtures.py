@@ -195,7 +195,7 @@ def run_init_pyrig_project(  # noqa: PLR0915
         )
 
         # add plugins
-        PackageManager.I.add_dev_dependencies_args(wheel_path, *plugins).run()
+        PackageManager.I.add_group_dev_args(wheel_path, *plugins).run()
 
         # uv add converts absolute paths to relative paths, which breaks when
         # the project is copied to a different location. We need to replace the
