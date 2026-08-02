@@ -90,6 +90,8 @@ addopts = [
   "--cov-report=term-missing:skip-covered",
   "--cov-report=xml",
   "--cov=pyrig_fixtures",
+  "--dist=worksteal",
+  "--numprocesses=auto",
 ]
 filterwarnings = [
   "error",
