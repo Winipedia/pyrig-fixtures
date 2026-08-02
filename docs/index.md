@@ -94,6 +94,12 @@ Because it does a real build, git init, and `uv sync`, it's slow. Pass
 `--skip-init-pyrig-project` (or its short alias `--sipp`) to skip it for a
 faster local feedback loop.
 
+Running the suite under [pytest-xdist](https://pytest-xdist.readthedocs.io)
+(e.g. `pytest -n auto`) distributes tests across several worker processes,
+each of which would otherwise repeat this expensive check independently.
+Only the worker named `gw0` actually runs it; every other worker skips it
+immediately, so the check still only runs once per overall test run.
+
 ## API Reference
 
 For class- and method-level details, see the [API Reference](api.md), generated

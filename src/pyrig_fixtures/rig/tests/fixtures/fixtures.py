@@ -64,6 +64,12 @@ def init_pyrig_project(request: pytest.FixtureRequest) -> tuple[bool, str]:
     temporary directory. Skipped when `--skip-init-pyrig-project` is
     passed.
 
+    Under pytest-xdist, every worker process would otherwise repeat this
+    expensive flow independently. Only worker `gw0` runs it for real;
+    `PYTEST_XDIST_WORKER` is unset entirely outside of pytest-xdist, which
+    also defaults to running it, so every other worker just returns early
+    without ever calling [run_init_pyrig_project][].
+
     Args:
         request: Used to read the `--skip-init-pyrig-project` option.
 
@@ -78,10 +84,17 @@ def init_pyrig_project(request: pytest.FixtureRequest) -> tuple[bool, str]:
 
     Note:
         Being autouse and session-scoped, a failed check reports a setup
-        error for every test in the session, not just one.
+        error for every test in the session, not just one. Under
+        pytest-xdist, that only holds for worker `gw0`'s own tests, since
+        it's the only worker that actually runs the check — the other
+        workers' tests are unaffected either way, but the run as a whole
+        still fails since `gw0`'s tests do.
     """
     if request.config.getoption(SKIP_INIT_PYRIG_PROJECT_FLAG):
         return True, f"Skipped via {SKIP_INIT_PYRIG_PROJECT_FLAG}"
+
+    if (worker := os.getenv("PYTEST_XDIST_WORKER", "gw0")) != "gw0":
+        return True, f"Skipped in xdist {worker=}"
 
     with (
         TemporaryDirectory() as tmp_dir,

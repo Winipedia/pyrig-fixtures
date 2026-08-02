@@ -63,8 +63,9 @@ available automatically in every project that installs it.
   to your project's shared fixtures module.
 - **An end-to-end init check** — an autouse fixture that builds this project,
   initializes a fresh scratch project with it installed as a pyrig plugin via
-  `pyrig init`, and verifies everything works. Skip it with the
-  `--skip-init-pyrig-project` pytest flag (`--sipp` for short).
+  `pyrig init`, and verifies everything works. Runs once per test session even
+  under pytest-xdist. Skip it with the `--skip-init-pyrig-project` pytest flag
+  (`--sipp` for short).
 
 ## Usage
 

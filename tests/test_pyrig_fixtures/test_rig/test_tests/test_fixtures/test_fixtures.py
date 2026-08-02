@@ -1,6 +1,7 @@
 """Test module."""
 
 import inspect
+import os
 import shutil
 import subprocess
 from collections.abc import Callable, Iterator
@@ -36,8 +37,17 @@ def test_run_init_pyrig_project(mocker: MockerFixture) -> None:
     request = mocker.MagicMock(spec=pytest.FixtureRequest)
     request.config.getoption.return_value = False
 
+    mocker.patch.dict("os.environ", {"PYTEST_XDIST_WORKER": "gw0"})
+    assert os.environ["PYTEST_XDIST_WORKER"] == "gw0"
+
     inspect.unwrap(init_pyrig_project)(request)
 
+    mock_init.assert_called_once()
+
+    mocker.patch.dict("os.environ", {"PYTEST_XDIST_WORKER": "gw1"})
+    func = inspect.unwrap(init_pyrig_project)
+    result: tuple[bool, str] = func(request)
+    assert result == (True, "Skipped in xdist worker='gw1'")
     mock_init.assert_called_once()
 
 
@@ -225,6 +235,9 @@ def test_init_pyrig_project_raises(mocker: MockerFixture) -> None:
     than via `__wrapped__`) would hit pytest's own "fixtures can't be called
     directly" guard instead of exercising the fixture's own `pytest.fail`
     call, silently skipping coverage of that branch.
+
+    `PYTEST_XDIST_WORKER` is pinned to `gw0` so this exercises the failure
+    regardless of which worker this test itself happens to run under.
     """
     mock_init = mocker.patch(
         run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
@@ -233,6 +246,8 @@ def test_init_pyrig_project_raises(mocker: MockerFixture) -> None:
     request = mocker.MagicMock(spec=pytest.FixtureRequest)
     request.config.getoption.return_value = False
 
+    mocker.patch.dict("os.environ", {"PYTEST_XDIST_WORKER": "gw0"})
+    assert os.environ["PYTEST_XDIST_WORKER"] == "gw0"
     with pytest.raises(pytest.fail.Exception, match="Simulated failure"):
         inspect.unwrap(init_pyrig_project)(request)
 
