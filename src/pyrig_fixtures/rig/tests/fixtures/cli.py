@@ -9,9 +9,9 @@ from collections.abc import Callable, Iterable
 from types import FunctionType
 
 import pytest
+import typer
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig_runtime.core.strings import snake_to_kebab_case
-from pyrig_runtime.rig.cli.cli import CLI
 from pytest_mock import MockerFixture
 from typer.testing import CliRunner
 
@@ -26,6 +26,8 @@ def command_calls_function(
     `function` where it is defined, invokes `cmd` through the CLI with
     `args`, and reports whether the patch was called exactly once. Whether
     the invocation itself succeeds is not checked.
+    Adds a second dummy command to prevent the only one command from being treated
+    as the default command.
 
     Args:
         mocker: pytest-mock fixture used to patch `function`.
@@ -43,7 +45,8 @@ def command_calls_function(
     ) -> bool:
         """Run `cmd` with `args`; return whether `function` was called exactly once."""
         mock = mocker.patch(function.__module__ + "." + function.__name__)
-        app = CLI.I.app()
+        app = typer.Typer(name="some-app", no_args_is_help=True)
+        app.command()(lambda: None)
         app.command()(cmd)
         CliRunner().invoke(app, [snake_to_kebab_case(cmd.__name__), *(args or [])])
         return mock.call_count == 1
