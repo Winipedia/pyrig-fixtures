@@ -10,6 +10,7 @@ from types import FunctionType
 
 import pytest
 import typer
+from pyrig.core.subprocesses import Args
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig_runtime.core.strings import snake_to_kebab_case
 from pytest_mock import MockerFixture
@@ -73,7 +74,11 @@ def command_works() -> Callable[[FunctionType], bool]:
 
     def check(cmd: FunctionType) -> bool:
         """Run `cmd` with `--help` and return whether its name appears in stdout."""
-        args = PackageManager.I.project_cmd_args("--help", cmd=cmd)
+        args = Args(
+            PackageManager.I.project_name(),
+            snake_to_kebab_case(cmd.__name__),
+            "--help",
+        )
         completed_process = args.run()
         stdout = completed_process.stdout
         name = cmd.__name__.replace("_", "-")
