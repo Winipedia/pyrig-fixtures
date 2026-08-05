@@ -55,8 +55,37 @@ def pytest_addoption(parser: pytest.Parser) -> None:
     )
 
 
+def claim_file(tmp_path_factory: pytest.TempPathFactory, stem: str) -> bool:
+    """Try to exclusively claim a `<stem>.claimed` marker file.
+
+    Every pytest-xdist worker's own base temp dir is `<root>/<worker_id>`,
+    so `<root>` is the same shared path in every worker regardless of how
+    many exist or how tests get distributed among them. Creating the marker
+    there via `Path.touch(exist_ok=False)` is atomic on every platform
+    pytest supports, so exactly one caller across all workers ever wins the
+    race.
+
+    Args:
+        tmp_path_factory: Used to locate the shared `<root>` dir.
+        stem: Distinguishes this claim from any other's marker file.
+
+    Returns:
+        `True` for the one caller that wins the race, `False` for every
+        other caller.
+    """
+    marker = tmp_path_factory.getbasetemp().parent / f"{stem}.claimed"
+    try:
+        marker.touch(exist_ok=False)
+    except FileExistsError:
+        return False
+    return True
+
+
 @pytest.fixture(scope="session", autouse=True)
-def init_pyrig_project(request: pytest.FixtureRequest) -> tuple[bool, str]:
+def init_pyrig_project(
+    request: pytest.FixtureRequest,
+    tmp_path_factory: pytest.TempPathFactory,
+) -> tuple[bool, str]:
     """Verify that this project can be built and adopted by a fresh consumer project.
 
     Delegates the actual build, install, and verification flow to
@@ -65,13 +94,14 @@ def init_pyrig_project(request: pytest.FixtureRequest) -> tuple[bool, str]:
     passed.
 
     Under pytest-xdist, every worker process would otherwise repeat this
-    expensive flow independently. Only worker `gw0` runs it for real;
-    `PYTEST_XDIST_WORKER` is unset entirely outside of pytest-xdist, which
-    also defaults to running it, so every other worker just returns early
-    without ever calling [run_init_pyrig_project][].
+    expensive flow independently. [claim_file][] elects a single winner,
+    across however many worker processes exist, to run it for real; outside
+    of pytest-xdist there's only one process, so it always wins trivially.
 
     Args:
         request: Used to read the `--skip-init-pyrig-project` option.
+        tmp_path_factory: Used to locate the shared dir to race for the
+            claim in.
 
     Returns:
         A tuple of `(success, message)`, where `success` is always `True`
@@ -85,16 +115,16 @@ def init_pyrig_project(request: pytest.FixtureRequest) -> tuple[bool, str]:
     Note:
         Being autouse and session-scoped, a failed check reports a setup
         error for every test in the session, not just one. Under
-        pytest-xdist, that only holds for worker `gw0`'s own tests, since
-        it's the only worker that actually runs the check — the other
+        pytest-xdist, that only holds for the winning worker's own tests,
+        since it's the only one that actually runs the check — the other
         workers' tests are unaffected either way, but the run as a whole
-        still fails since `gw0`'s tests do.
+        still fails since the winner's tests do.
     """
     if request.config.getoption(SKIP_INIT_PYRIG_PROJECT_FLAG):
         return True, f"Skipped via {SKIP_INIT_PYRIG_PROJECT_FLAG}"
 
-    if (worker := os.getenv("PYTEST_XDIST_WORKER", "gw0")) != "gw0":
-        return True, f"Skipped in xdist {worker=}"
+    if not claim_file(tmp_path_factory, init_pyrig_project.__name__):
+        return True, "Skipped: another worker already claimed this check"
 
     with (
         TemporaryDirectory() as tmp_dir,
