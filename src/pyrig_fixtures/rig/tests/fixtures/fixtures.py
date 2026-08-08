@@ -298,7 +298,7 @@ def run_init_pyrig_project(  # noqa: PLR0915
                 f"Expected package directory {package_dir} to exist after init",
             )
 
-        for cf in ConfigFile.concrete_subclasses():
+        for cf in ConfigFile.concrete_leaves():
             if not cf().path().exists():
                 return (
                     False,
