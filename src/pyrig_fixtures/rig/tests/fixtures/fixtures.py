@@ -16,6 +16,7 @@ import pytest
 from pyrig.rig.cli.subcommands import init
 from pyrig.rig.configs.base.config_file import ConfigFile
 from pyrig.rig.configs.pyproject import PyprojectConfigFile
+from pyrig.rig.configs.version_control.ignore import VersionControllerIgnoreConfigFile
 from pyrig.rig.tools.packages.manager import PackageManager
 from pyrig.rig.tools.pyrigger import Pyrigger
 from pyrig.rig.tools.testing.project import ProjectTester
@@ -179,9 +180,16 @@ def run_init_pyrig_project(  # noqa: PLR0915
     src_project_name = "src-project"
 
     pyrig_project_tmp_path = tmp_path / PackageManager.I.project_name()
+
+    ignore_patterns = [
+        line.strip().strip("/")
+        for line in VersionControllerIgnoreConfigFile.I.load()
+        if line.strip() and not line.startswith("#")
+    ]
     shutil.copytree(
         Path(),
         pyrig_project_tmp_path,
+        ignore=shutil.ignore_patterns(*ignore_patterns, ".git"),
     )
     with chdir(pyrig_project_tmp_path):
         # remove a potential dist dir from a previous build
