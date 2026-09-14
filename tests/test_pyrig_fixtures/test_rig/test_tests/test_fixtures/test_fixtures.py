@@ -5,6 +5,7 @@ import shutil
 import subprocess
 from collections.abc import Callable, Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 from pyrig.core.subprocesses import Args
@@ -115,14 +116,9 @@ def test_init_pyrig_project_fails(  # noqa: C901, PLR0915
     # unset it here so these scenarios cover the other branch.
     monkeypatch.delenv("VIRTUAL_ENV", raising=False)
 
-    def fake_copytree(_src: Path, dst: Path) -> None:
-        """Scaffold a directory instead of really copying the project.
-
-        Also leaves a stale `dist/` dir behind, as if from a previous build,
-        to exercise its cleanup branch.
-        """
+    def fake_copytree(src: Path, dst: Path, ignore: Any) -> None:  # noqa: ANN401, ARG001
+        """Scaffold a directory instead of really copying the project."""
         dst.mkdir(parents=True, exist_ok=True)
-        (dst / "dist").mkdir(exist_ok=True)
 
     mocker.patch.object(shutil, "copytree", fake_copytree)
 

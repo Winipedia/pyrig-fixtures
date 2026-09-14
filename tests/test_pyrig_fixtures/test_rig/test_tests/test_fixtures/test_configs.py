@@ -42,6 +42,9 @@ def sample_config_file(
             """Get the file extension."""
             return "test"
 
+        def empty_configs(self) -> dict[str, Any]:
+            return {}
+
         def _configs(self) -> dict[str, Any]:
             """Get the configs."""
             return {"key": "value"}
