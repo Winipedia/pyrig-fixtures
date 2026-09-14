@@ -747,7 +747,7 @@ wheels = [
 
 [[package]]
 name = "pyrig-fixtures"
-version = "2.24.49"
+version = "2.24.50"
 source = { editable = "." }
 dependencies = [
     { name = "pyrig" },
