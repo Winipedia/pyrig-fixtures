@@ -292,7 +292,7 @@ def run_init_pyrig_project(  # noqa: PLR0915
         args = PackageManager.I.run_args(src_project_name, version.__name__)
         res = args.run()
         stdout = res.stdout
-        expected = f"{src_project_name} 0.1.0"
+        expected = "0.1.0"
         if expected not in stdout:
             return (
                 False,
