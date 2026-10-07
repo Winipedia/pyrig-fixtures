@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-fixtures"
-version = "2.25.21"
+version = "2.25.25"
 description = "A pyrig plugin that provides pytest fixtures support."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -67,6 +67,7 @@ dev = [
   "tombi>=1.5.5",
   "ty>=0.0.83",
   "typos>=1.50.2",
+  "vulture>=2.16",
   "zensical>=0.0.64",
   "zizmor>=1.30.1",
 ]
@@ -126,3 +127,9 @@ convention = "google"
 [tool.ryl.rules]
 ALL = "enable"
 key-ordering = "disable"
+
+[tool.vulture]
+paths = [
+  "src",
+  "vulture_whitelist.py",
+]
