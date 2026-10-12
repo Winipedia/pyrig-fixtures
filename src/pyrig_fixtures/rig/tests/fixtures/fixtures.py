@@ -147,8 +147,8 @@ def run_init_pyrig_project(  # noqa: PLR0915
     project under `tmp_path`, adding the wheel plus every other
     currently-installed plugin that depends on pyrig-runtime as dev
     dependencies. Runs `pyrig init` in the new project, then checks that
-    its own test suite fails as expected, that its CLI and `version`
-    command produce the expected output, that the expected package
+    its own test suite fails as expected, that its CLI and `--version`
+    flag produce the expected output, that the expected package
     directory was generated, and that every `ConfigFile` subclass
     produced its file. Finally runs `pyrigger --help` as a last sanity
     check.
@@ -287,7 +287,7 @@ def run_init_pyrig_project(  # noqa: PLR0915
                 "Expected the projects CLI to work and find the project name in stdout",
             )
 
-        # assert calling version works
+        # assert calling --version works
         args = PackageManager.I.run_args(src_project_name, "--version")
         res = args.run()
         stdout = res.stdout
@@ -295,7 +295,7 @@ def run_init_pyrig_project(  # noqa: PLR0915
         if expected not in stdout:
             return (
                 False,
-                f"Expected the projects version command to output '{expected}'",
+                f"Expected the projects --version flag to output '{expected}'",
             )
 
         package_dir = src_project_dir / "src" / kebab_to_snake_case(src_project_name)

@@ -10,7 +10,6 @@ from typing import Any
 import pytest
 from pyrig.core.subprocesses import Args
 from pyrig_runtime.core.strings import kebab_to_snake_case
-from pyrig_runtime.rig.cli.shared_subcommands import version
 from pytest_mock import MockerFixture
 
 from pyrig_fixtures.rig.tests.fixtures.fixtures import (
@@ -150,7 +149,7 @@ def test_init_pyrig_project_fails(  # noqa: C901, PLR0915
             )
         if project_name in args and "--help" in args:
             return subprocess.CompletedProcess(args, 0, stdout=project_name)
-        if project_name in args and version.__name__ in args:
+        if project_name in args and "--version" in args:
             return subprocess.CompletedProcess(args, 0, stdout=f"{project_name} 0.1.0")
         return subprocess.CompletedProcess(args, 0, stdout="")
 
@@ -213,14 +212,14 @@ def test_init_pyrig_project_fails(  # noqa: C901, PLR0915
         check: bool,  # noqa: FBT001
         result: subprocess.CompletedProcess[str],
     ) -> None:
-        """Make the CLI `version` run print unexpected output."""
-        if check is True and project_name in args and version.__name__ in args:
+        """Make the CLI `--version` run print unexpected output."""
+        if check is True and project_name in args and "--version" in args:
             result.stdout = ""
 
     mock_run(force_cli_version_mismatch)
     success, message = run_scenario("cli_version")
     assert success is False
-    assert "Expected the projects version command" in message
+    assert "Expected the projects --version flag" in message
 
     # The remaining checks are filesystem-based; a plain fake run reaches
     # them, and the package directory / config files naturally don't exist
