@@ -23,7 +23,6 @@ from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig.rig.tools.version_control.controller import VersionController
 from pyrig_runtime.core.dependencies.discovery import dependent_packages
 from pyrig_runtime.core.strings import kebab_to_snake_case, snake_to_kebab_case
-from pyrig_runtime.rig.cli.shared_subcommands import version
 
 SKIP_INIT_PYRIG_PROJECT_FLAG_NAME = "skip-init-pyrig-project"
 
@@ -289,7 +288,7 @@ def run_init_pyrig_project(  # noqa: PLR0915
             )
 
         # assert calling version works
-        args = PackageManager.I.run_args(src_project_name, version.__name__)
+        args = PackageManager.I.run_args(src_project_name, "--version")
         res = args.run()
         stdout = res.stdout
         expected = "0.1.0"
