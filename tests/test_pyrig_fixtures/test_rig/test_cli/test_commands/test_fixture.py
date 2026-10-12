@@ -1,27 +1,9 @@
 """module."""
 
-from collections.abc import Callable, Iterable
 from contextlib import chdir
 from pathlib import Path
-from types import FunctionType
 
-from pyrig.core.subprocesses import Args
-from pyrig_runtime.core.strings import snake_to_kebab_case
-
-from pyrig_fixtures.rig.cli import fixture
-from pyrig_fixtures.rig.cli.commands.make.fixture import make_fixture
-
-
-def test_fixture(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
-) -> None:
-    """Test function."""
-    result = Args(
-        *["pyrig", "mk", snake_to_kebab_case(fixture.__name__), "--help"],
-    ).run(check=False)
-    assert result.returncode == 0
-
-    assert command_calls_function(fixture, make_fixture, ["my-new-fixture"])
+from pyrig_fixtures.rig.cli.commands.fixture import make_fixture
 
 
 def test_make_fixture(tmp_path: Path) -> None:

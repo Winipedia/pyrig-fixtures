@@ -63,8 +63,8 @@ available automatically in every project that installs it.
 - **Automatic, cross-package availability** — fixtures are registered as a
   pytest plugin so they work without imports, and any installed package that
   depends on pyrig-fixtures contributes its own fixtures the same way.
-- **A scaffolding command** — `pyrig mk fixture <name>` adds a new fixture stub
-  to your project's shared fixtures module.
+- **A scaffolding command** — `pyrig-fixtures fixture <name>` adds a new
+  fixture stub to your project's shared fixtures module.
 - **An end-to-end init check** — an autouse fixture that builds this project,
   initializes a fresh scratch project with it installed as a pyrig plugin via
   `pyrig init`, and verifies everything works. Runs once per test session even

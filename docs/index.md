@@ -81,9 +81,9 @@ fixtures you add there are picked up too.
 
 ### Scaffolding command
 
-`pyrig mk fixture <name>` appends a new `@pytest.fixture` stub to your project's
-shared fixtures module under `rig/tests/fixtures/`, creating it if needed — a
-discovered location, so the new fixture is registered and available
+`pyrig-fixtures fixture <name>` appends a new `@pytest.fixture` stub to your
+project's shared fixtures module under `rig/tests/fixtures/`, creating it if
+needed — a discovered location, so the new fixture is registered and available
 automatically.
 
 ### End-to-end project initialization check
