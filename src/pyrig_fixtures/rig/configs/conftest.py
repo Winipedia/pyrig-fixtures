@@ -28,10 +28,10 @@ class ConftestConfigFile(CopyModuleDocstringConfigFile):
         """Return whether the conftest module is already registered as a pytest plugin.
 
         Returns:
-            `True` if `pyrig_fixtures.rig.tests.conftest`'s dotted name is
-            listed in the `pytest_plugins` list of the file currently on disk.
+            `True` if the file currently on disk contains
+            `pyrig_fixtures.rig.tests.conftest`'s dotted name.
         """
-        return conftest.__name__ in getattr(self.module(), "pytest_plugins", [])
+        return conftest.__name__ in self.read_content()
 
     def content(self) -> str:
         """Return the generated `conftest.py` file's content.

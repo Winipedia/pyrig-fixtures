@@ -5,6 +5,7 @@ from pyrig.rig.configs.base.copy_module import CopyModuleConfigFile
 from pyrig.rig.configs.base.string_ import StringConfigFile
 
 from pyrig_fixtures.rig.configs.conftest import ConftestConfigFile
+from pyrig_fixtures.rig.tests.conftest import pytest_plugins
 from pyrig_fixtures.rig.tests.fixtures.cli import (
     command_calls_function,
     command_works,
@@ -26,6 +27,7 @@ _CONFIG_FILE_OVERRIDES = (
 )
 _CONFIG_FILES = (ConftestConfigFile,)
 _PYTEST_FIXTURES = (
+    pytest_plugins,
     command_calls_function,
     command_works,
     config_file_factory,
