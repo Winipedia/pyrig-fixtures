@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-fixtures"
-version = "2.26.12"
+version = "2.26.22"
 description = "A pyrig plugin that provides pytest fixtures support."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -124,6 +124,9 @@ select = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
+
+[tool.ryl.lint]
+strict = true
 
 [tool.ryl.lint.rules]
 ALL = "enable"

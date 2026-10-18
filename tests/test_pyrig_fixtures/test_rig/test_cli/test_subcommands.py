@@ -8,9 +8,9 @@ from pyrig_fixtures.rig.cli.subcommands import fixture
 
 
 def test_fixture(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
     command_works: Callable[[FunctionType], bool],
 ) -> None:
     """Test function."""
     assert command_works(fixture)
-    assert command_calls_function(fixture, make_fixture, ["my-new-fixture"])
+    assert command_calls_func(fixture, make_fixture, ["my-new-fixture"])

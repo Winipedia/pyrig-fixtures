@@ -12,8 +12,8 @@ def test_command_works(command_works: Callable[[FunctionType], bool]) -> None:
     assert command_works(fixture)
 
 
-def test_command_calls_function(
-    command_calls_function: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
+def test_command_calls_func(
+    command_calls_func: Callable[[FunctionType, FunctionType, Iterable[str]], bool],
 ) -> None:
     """Test function."""
-    assert command_calls_function(fixture, make_fixture, ["my-new-fixture"])
+    assert command_calls_func(fixture, make_fixture, ["my-new-fixture"])

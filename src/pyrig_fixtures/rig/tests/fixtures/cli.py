@@ -18,34 +18,34 @@ from typer.testing import CliRunner
 
 
 @pytest.fixture
-def command_calls_function(
+def command_calls_func(
     mocker: MockerFixture,
 ) -> Callable[[FunctionType, FunctionType, Iterable[str]], bool]:
     """Return a callable that verifies a CLI command delegates to a function.
 
     The returned callable registers `cmd` on a freshly built CLI app, patches
-    `function` where it is defined, invokes `cmd` through the CLI with
+    `func` where it is defined, invokes `cmd` through the CLI with
     `args`, and reports whether the patch was called exactly once. Whether
     the invocation itself succeeds is not checked.
     Adds a second dummy command to prevent the only one command from being treated
     as the default command.
 
     Args:
-        mocker: pytest-mock fixture used to patch `function`.
+        mocker: pytest-mock fixture used to patch `func`.
 
     Returns:
-        A callable `(cmd, function, args) -> bool` that returns `True` if
-        `function` is called exactly once while `cmd` runs with `args`,
+        A callable `(cmd, func, args) -> bool` that returns `True` if
+        `func` is called exactly once while `cmd` runs with `args`,
         `False` otherwise.
     """
 
     def check(
         cmd: FunctionType,
-        function: FunctionType,
+        func: FunctionType,
         args: Iterable[str],
     ) -> bool:
-        """Run `cmd` with `args`; return whether `function` was called exactly once."""
-        mock = mocker.patch(function.__module__ + "." + function.__name__)
+        """Run `cmd` with `args`; return whether `func` was called exactly once."""
+        mock = mocker.patch(func.__module__ + "." + func.__name__)
         app = typer.Typer(name="some-app", no_args_is_help=True)
         app.command()(lambda: None)
         app.command()(cmd)

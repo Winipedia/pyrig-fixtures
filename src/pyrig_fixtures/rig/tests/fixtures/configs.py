@@ -27,25 +27,25 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
         tmp_path: Pytest's per-test temporary directory.
 
     Returns:
-        A callable `(base_class) -> type[T]` that wraps `base_class` in a
+        A callable `(base_cls) -> type[T]` that wraps `base_cls` in a
         subclass whose file operations are redirected to `tmp_path`.
     """
 
     def _make_test_config(
-        base_class: type[T],
+        base_cls: type[T],
     ) -> type[T]:
-        """Wrap `base_class` with `tmp_path`-redirected file operations.
+        """Wrap `base_cls` with `tmp_path`-redirected file operations.
 
         Args:
-            base_class: The `ConfigFile` subclass to wrap.
+            base_cls: The `ConfigFile` subclass to wrap.
 
         Returns:
-            A subclass of `base_class` with all file paths redirected to
+            A subclass of `base_cls` with all file paths redirected to
             `tmp_path`.
         """
 
-        class TestConfigFile(base_class):  # ty: ignore[unsupported-base]
-            """Subclass of `base_class` with every file operation under `tmp_path`."""
+        class TestConfigFile(base_cls):  # ty: ignore[unsupported-base]
+            """Subclass of `base_cls` with every file operation under `tmp_path`."""
 
             def _dump(self, configs: dict[str, Any] | list[Any]) -> None:
                 """Write the config from within `tmp_path`, isolating real files."""

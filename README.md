@@ -58,8 +58,7 @@ available automatically in every project that installs it.
 ## What it adds
 
 - **A fixture library** — ready-made fixtures for common testing needs:
-  temporary project trees, module and package creation, config-file testing,
-  CLI-command assertions, and environment gating.
+  config-file testing, CLI-command assertions, and environment gating.
 - **Automatic, cross-package availability** — fixtures are registered as a
   pytest plugin so they work without imports, and any installed package that
   depends on pyrig-fixtures contributes its own fixtures the same way.
