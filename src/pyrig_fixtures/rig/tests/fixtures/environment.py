@@ -16,6 +16,45 @@ from pyrig.rig.tools.version_control.remote.controller import (
 
 
 @pytest.fixture(scope="session")
+def on_linux_and_latest_python_version_or_not_in_ci(
+    *,
+    on_linux_and_latest_python_version: bool,
+) -> bool:
+    """Return whether tests that require a canonical environment should run.
+
+    Args:
+        on_linux_and_latest_python_version: Whether the environment is Linux
+            with the latest Python version.
+
+    Returns:
+        True if the environment is Linux with the latest Python version, or
+        if not currently running inside GitHub Actions.
+    """
+    return (
+        on_linux_and_latest_python_version
+    ) or not RemoteVersionController.I.running_in_ci()
+
+
+@pytest.fixture(scope="session")
+def on_linux_and_latest_python_version(
+    *,
+    on_linux: bool,
+    on_latest_python_version: bool,
+) -> bool:
+    """Return whether the current environment is Linux with the latest Python version.
+
+    Args:
+        on_linux: Whether the current system is Linux.
+        on_latest_python_version: Whether the running Python version matches
+            the latest stable release.
+
+    Returns:
+        True if both conditions are met.
+    """
+    return on_linux and on_latest_python_version
+
+
+@pytest.fixture(scope="session")
 def on_latest_python_version(on_python_version: Callable[[str], bool]) -> bool:
     """Return whether the running Python version matches the latest stable release.
 
@@ -43,45 +82,6 @@ def on_linux(on_platform: Callable[[str], bool]) -> bool:
         True if the system is Linux.
     """
     return on_platform("Linux")
-
-
-@pytest.fixture(scope="session")
-def on_linux_and_latest_python_version(
-    *,
-    on_linux: bool,
-    on_latest_python_version: bool,
-) -> bool:
-    """Return whether the current environment is Linux with the latest Python version.
-
-    Args:
-        on_linux: Whether the current system is Linux.
-        on_latest_python_version: Whether the running Python version matches
-            the latest stable release.
-
-    Returns:
-        True if both conditions are met.
-    """
-    return on_linux and on_latest_python_version
-
-
-@pytest.fixture(scope="session")
-def on_linux_and_latest_python_version_or_not_in_ci(
-    *,
-    on_linux_and_latest_python_version: bool,
-) -> bool:
-    """Return whether tests that require a canonical environment should run.
-
-    Args:
-        on_linux_and_latest_python_version: Whether the environment is Linux
-            with the latest Python version.
-
-    Returns:
-        True if the environment is Linux with the latest Python version, or
-        if not currently running inside GitHub Actions.
-    """
-    return (
-        on_linux_and_latest_python_version
-    ) or not RemoteVersionController.I.running_in_ci()
 
 
 @pytest.fixture(scope="session")

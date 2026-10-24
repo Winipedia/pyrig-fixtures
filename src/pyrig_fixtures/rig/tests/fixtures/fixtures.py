@@ -32,55 +32,6 @@ SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG = (
 )
 
 
-def pytest_addoption(parser: pytest.Parser) -> None:
-    """Register the `--skip-init-pyrig-project` command-line flag.
-
-    The flag lets a run opt out of the expensive [init_pyrig_project][]
-    fixture that every project depending on pyrig-fixtures otherwise runs
-    once per test session, e.g. for a fast local feedback loop.
-
-    A true single-dash short form (e.g. `-sipp`) isn't possible: pytest
-    reserves lowercase single-dash options for its own core and rejects
-    them from plugins, so `--sipp` is offered as the short alias instead.
-
-    Args:
-        parser: Pytest's parser to register the command-line option on.
-    """
-    parser.addoption(
-        SKIP_INIT_PYRIG_PROJECT_FLAG,
-        SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG,
-        action="store_true",
-        default=False,
-        help="Skip the slow `init_pyrig_project` end-to-end fixture.",
-    )
-
-
-def claim_file(tmp_path_factory: pytest.TempPathFactory, stem: str) -> bool:
-    """Try to exclusively claim a `<stem>.claimed` marker file.
-
-    Every pytest-xdist worker's own base temp dir is `<root>/<worker_id>`,
-    so `<root>` is the same shared path in every worker regardless of how
-    many exist or how tests get distributed among them. Creating the marker
-    there via `Path.touch(exist_ok=False)` is atomic on every platform
-    pytest supports, so exactly one caller across all workers ever wins the
-    race.
-
-    Args:
-        tmp_path_factory: Used to locate the shared `<root>` dir.
-        stem: Distinguishes this claim from any other's marker file.
-
-    Returns:
-        `True` for the one caller that wins the race, `False` for every
-        other caller.
-    """
-    marker = tmp_path_factory.getbasetemp().parent / f"{stem}.claimed"
-    try:
-        marker.touch(exist_ok=False)
-    except FileExistsError:
-        return False
-    return True
-
-
 @pytest.fixture(scope="session", autouse=True)
 def init_pyrig_project(
     request: pytest.FixtureRequest,
@@ -135,6 +86,55 @@ def init_pyrig_project(
     if not success:
         pytest.fail(f"Failed to initialize pyrig project: {msg}")
     return success, msg
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    """Register the `--skip-init-pyrig-project` command-line flag.
+
+    The flag lets a run opt out of the expensive [init_pyrig_project][]
+    fixture that every project depending on pyrig-fixtures otherwise runs
+    once per test session, e.g. for a fast local feedback loop.
+
+    A true single-dash short form (e.g. `-sipp`) isn't possible: pytest
+    reserves lowercase single-dash options for its own core and rejects
+    them from plugins, so `--sipp` is offered as the short alias instead.
+
+    Args:
+        parser: Pytest's parser to register the command-line option on.
+    """
+    parser.addoption(
+        SKIP_INIT_PYRIG_PROJECT_FLAG,
+        SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG,
+        action="store_true",
+        default=False,
+        help="Skip the slow `init_pyrig_project` end-to-end fixture.",
+    )
+
+
+def claim_file(tmp_path_factory: pytest.TempPathFactory, stem: str) -> bool:
+    """Try to exclusively claim a `<stem>.claimed` marker file.
+
+    Every pytest-xdist worker's own base temp dir is `<root>/<worker_id>`,
+    so `<root>` is the same shared path in every worker regardless of how
+    many exist or how tests get distributed among them. Creating the marker
+    there via `Path.touch(exist_ok=False)` is atomic on every platform
+    pytest supports, so exactly one caller across all workers ever wins the
+    race.
+
+    Args:
+        tmp_path_factory: Used to locate the shared `<root>` dir.
+        stem: Distinguishes this claim from any other's marker file.
+
+    Returns:
+        `True` for the one caller that wins the race, `False` for every
+        other caller.
+    """
+    marker = tmp_path_factory.getbasetemp().parent / f"{stem}.claimed"
+    try:
+        marker.touch(exist_ok=False)
+    except FileExistsError:
+        return False
+    return True
 
 
 def run_init_pyrig_project(  # noqa: PLR0915

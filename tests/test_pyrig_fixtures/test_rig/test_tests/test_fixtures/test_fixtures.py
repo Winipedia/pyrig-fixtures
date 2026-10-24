@@ -22,12 +22,6 @@ from pyrig_fixtures.rig.tests.fixtures.fixtures import (
 )
 
 
-def test_init_pyrig_project(init_pyrig_project: tuple[bool, str]) -> None:
-    """Test function."""
-    success, message = init_pyrig_project
-    assert success, message
-
-
 def test_claim_file(mocker: MockerFixture, tmp_path: Path) -> None:
     """Test function.
 
@@ -42,59 +36,10 @@ def test_claim_file(mocker: MockerFixture, tmp_path: Path) -> None:
     assert claim_file(tmp_path_factory, "some-check") is False
 
 
-def test_run_init_pyrig_project(
-    mocker: MockerFixture,
-    tmp_path: Path,
-) -> None:
-    """Test function.
-
-    Regardless of which caller gets there first — e.g. under pytest-xdist,
-    not necessarily worker `gw0`, which may not even be handed a test if
-    the suite has fewer tests than workers — exactly one claims and
-    performs the real check, and every other caller for the same shared
-    dir just skips.
-    """
-    mock_init = mocker.patch(
-        run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
-        return_value=(True, "Simulated Success"),
-    )
-    request = mocker.MagicMock(spec=pytest.FixtureRequest)
-    request.config.getoption.return_value = False
-    func = inspect.unwrap(init_pyrig_project)
-
-    def tmp_path_factory_for(worker: str) -> pytest.TempPathFactory:
-        factory = mocker.MagicMock(spec=pytest.TempPathFactory)
-        factory.getbasetemp.return_value = tmp_path / worker
-        return factory
-
-    result = func(request, tmp_path_factory_for("gw3"))
-    assert result == (True, "Simulated Success")
-    mock_init.assert_called_once()
-
-    result = func(request, tmp_path_factory_for("gw7"))
-    assert result == (True, "Skipped: another worker already claimed this check")
-    mock_init.assert_called_once()
-
-
-def test_init_pyrig_project_skipped(mocker: MockerFixture) -> None:
-    """Test function.
-
-    Covers the `--skip-init-pyrig-project` opt-out: the real, slow
-    `run_init_pyrig_project` flow must not run at all when the flag is set.
-    """
-    mock_init = mocker.patch(
-        run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
-    )
-    request = mocker.MagicMock(spec=pytest.FixtureRequest)
-    request.config.getoption.return_value = True
-    tmp_path_factory = mocker.MagicMock(spec=pytest.TempPathFactory)
-
-    result = inspect.unwrap(init_pyrig_project)(request, tmp_path_factory)
-
-    assert result == (True, f"Skipped via {SKIP_INIT_PYRIG_PROJECT_FLAG}")
-    request.config.getoption.assert_called_once_with(SKIP_INIT_PYRIG_PROJECT_FLAG)
-    mock_init.assert_not_called()
-    tmp_path_factory.getbasetemp.assert_not_called()
+def test_init_pyrig_project(init_pyrig_project: tuple[bool, str]) -> None:
+    """Test function."""
+    success, message = init_pyrig_project
+    assert success, message
 
 
 def test_init_pyrig_project_fails(  # noqa: C901, PLR0915
@@ -276,6 +221,27 @@ def test_init_pyrig_project_raises(
     mock_init.assert_called_once()
 
 
+def test_init_pyrig_project_skipped(mocker: MockerFixture) -> None:
+    """Test function.
+
+    Covers the `--skip-init-pyrig-project` opt-out: the real, slow
+    `run_init_pyrig_project` flow must not run at all when the flag is set.
+    """
+    mock_init = mocker.patch(
+        run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
+    )
+    request = mocker.MagicMock(spec=pytest.FixtureRequest)
+    request.config.getoption.return_value = True
+    tmp_path_factory = mocker.MagicMock(spec=pytest.TempPathFactory)
+
+    result = inspect.unwrap(init_pyrig_project)(request, tmp_path_factory)
+
+    assert result == (True, f"Skipped via {SKIP_INIT_PYRIG_PROJECT_FLAG}")
+    request.config.getoption.assert_called_once_with(SKIP_INIT_PYRIG_PROJECT_FLAG)
+    mock_init.assert_not_called()
+    tmp_path_factory.getbasetemp.assert_not_called()
+
+
 def test_pytest_addoption(mocker: MockerFixture) -> None:
     """Test function."""
     parser = mocker.MagicMock(spec=pytest.Parser)
@@ -286,3 +252,37 @@ def test_pytest_addoption(mocker: MockerFixture) -> None:
     assert args == (SKIP_INIT_PYRIG_PROJECT_FLAG, SKIP_INIT_PYRIG_PROJECT_SHORT_FLAG)
     assert kwargs["action"] == "store_true"
     assert kwargs["default"] is False
+
+
+def test_run_init_pyrig_project(
+    mocker: MockerFixture,
+    tmp_path: Path,
+) -> None:
+    """Test function.
+
+    Regardless of which caller gets there first — e.g. under pytest-xdist,
+    not necessarily worker `gw0`, which may not even be handed a test if
+    the suite has fewer tests than workers — exactly one claims and
+    performs the real check, and every other caller for the same shared
+    dir just skips.
+    """
+    mock_init = mocker.patch(
+        run_init_pyrig_project.__module__ + "." + run_init_pyrig_project.__name__,
+        return_value=(True, "Simulated Success"),
+    )
+    request = mocker.MagicMock(spec=pytest.FixtureRequest)
+    request.config.getoption.return_value = False
+    func = inspect.unwrap(init_pyrig_project)
+
+    def tmp_path_factory_for(worker: str) -> pytest.TempPathFactory:
+        factory = mocker.MagicMock(spec=pytest.TempPathFactory)
+        factory.getbasetemp.return_value = tmp_path / worker
+        return factory
+
+    result = func(request, tmp_path_factory_for("gw3"))
+    assert result == (True, "Simulated Success")
+    mock_init.assert_called_once()
+
+    result = func(request, tmp_path_factory_for("gw7"))
+    assert result == (True, "Skipped: another worker already claimed this check")
+    mock_init.assert_called_once()
