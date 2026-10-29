@@ -3,7 +3,7 @@
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 import pytest
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -59,30 +59,37 @@ def sample_config_file(
     class SampleConfigFile(config_file_factory(ConfigFile)):  # ty: ignore[unsupported-base]
         """Sample config file for testing."""
 
+        @override
         def parent_path(self) -> Path:
             """Get the parent path."""
             return Path()
 
+        @override
         def stem(self) -> str:
             """Get the stem."""
             return "sample"
 
+        @override
         def _load(self) -> dict[str, Any]:
             """Load the config."""
             super()._load()
             return {"key": "value"}
 
+        @override
         def _dump(self, configs: dict[str, Any] | list[Any]) -> None:
             """Dump the config."""
             return super()._dump(configs)
 
+        @override
         def extension(self) -> str:
             """Get the file extension."""
             return "test"
 
+        @override
         def empty_configs(self) -> dict[str, Any]:
             return {}
 
+        @override
         def _configs(self) -> dict[str, Any]:
             """Get the configs."""
             return {"key": "value"}

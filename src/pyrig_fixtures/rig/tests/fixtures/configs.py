@@ -7,7 +7,7 @@ to pytest's `tmp_path` so tests never touch real project files.
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-from typing import Any
+from typing import Any, override
 
 import pytest
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -47,21 +47,25 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
         class TestConfigFile(base_cls):  # ty: ignore[unsupported-base]
             """Subclass of `base_cls` with every file operation under `tmp_path`."""
 
+            @override
             def _dump(self, configs: dict[str, Any] | list[Any]) -> None:
                 """Write the config from within `tmp_path`, isolating real files."""
                 with chdir(tmp_path):
                     super()._dump(configs)
 
+            @override
             def _load(self) -> dict[str, Any] | list[Any]:
                 """Load the config from within `tmp_path`, isolating real files."""
                 with chdir(tmp_path):
                     return super()._load()
 
+            @override
             def create_file(self) -> None:
                 """Create the file from within `tmp_path`, isolating real files."""
                 with chdir(tmp_path):
                     super().create_file()
 
+            @override
             def path(self) -> Path:
                 """Return the config file path, rooted under `tmp_path`.
 
