@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-fixtures"
-version = "2.27.35"
+version = "2.27.36"
 description = "A pyrig plugin that provides pytest fixtures support."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -132,6 +132,7 @@ strict = true
 [tool.ryl.lint.rules]
 ALL = "enable"
 key-ordering = "disable"
+yaml-directive = "disable"
 
 [tool.vulture]
 paths = [
