@@ -1,7 +1,7 @@
 # Home
 
 <!-- project-status -->
-[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-fixtures/health_check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig-fixtures/actions/workflows/health_check.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-fixtures/health-check.yml?label=CI&logo=github)](https://github.com/Winipedia/pyrig-fixtures/actions/workflows/health-check.yml)
 [![CD](https://img.shields.io/github/actions/workflow/status/Winipedia/pyrig-fixtures/release.yml?label=CD&logo=github)](https://github.com/Winipedia/pyrig-fixtures/actions/workflows/release.yml)
 [![ProjectTester](https://codecov.io/gh/Winipedia/pyrig-fixtures/branch/main/graph/badge.svg)](https://codecov.io/gh/Winipedia/pyrig-fixtures)
 <!-- code-quality -->
