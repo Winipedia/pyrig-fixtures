@@ -80,6 +80,6 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
                     path = tmp_path / path
                 return path
 
-        return TestConfigFile  # ty:ignore[invalid-return-type]
+        return TestConfigFile  # ty:ignore[invalid-explicit-return]
 
     return _make_test_config
