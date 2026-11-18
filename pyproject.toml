@@ -1,6 +1,6 @@
 [project]
 name = "pyrig-fixtures"
-version = "2.27.87"
+version = "2.27.88"
 description = "A pyrig plugin that provides pytest fixtures support."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -135,6 +135,13 @@ strict = true
 ALL = "enable"
 key-ordering = "disable"
 yaml-directive = "disable"
+
+[tool.typos.default]
+extend-ignore-re = [
+  "(?m)^.*spellchecker:disable-line.*$",
+  "(?m)^.*spellchecker:disable-next-line.*\n.*",
+]
+locale = "en-us"
 
 [tool.vulture]
 paths = [
