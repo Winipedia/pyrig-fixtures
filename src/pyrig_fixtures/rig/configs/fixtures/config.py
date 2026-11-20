@@ -15,7 +15,7 @@ from pyrig.rig.tools.testing.project import ProjectTester
 from pyrig_fixtures.rig.tests import conftest
 
 
-class ConftestConfigFile(CopyModuleDocstringConfigFile):
+class FixturesConfigConfigFile(CopyModuleDocstringConfigFile):
     """The `tests/conftest.py` config file, generated for the target project.
 
     The generated file has two parts: the module-level docstring of

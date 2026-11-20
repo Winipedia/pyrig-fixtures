@@ -2,42 +2,43 @@
 
 from pathlib import Path
 
-from pyrig_fixtures.rig.configs.conftest import ConftestConfigFile
+from pyrig_fixtures.rig.configs.fixtures.config import FixturesConfigConfigFile
 from pyrig_fixtures.rig.tests import conftest
 
 
-class TestConftestConfigFile:
+class TestFixturesConfigConfigFile:
     """Test class."""
 
     def test_content(self) -> None:
         """Test method."""
         assert (
-            ConftestConfigFile.I.plugin_definition() in ConftestConfigFile.I.content()
+            FixturesConfigConfigFile.I.plugin_definition()
+            in FixturesConfigConfigFile.I.content()
         )
 
     def test_copy_module(self) -> None:
         """Test method."""
-        assert ConftestConfigFile.I.copy_module() is conftest
+        assert FixturesConfigConfigFile.I.copy_module() is conftest
 
     def test_is_correct(self) -> None:
         """Test method."""
-        assert ConftestConfigFile.I.is_correct()
+        assert FixturesConfigConfigFile.I.is_correct()
 
     def test_package_root(self) -> None:
         """Test method."""
-        assert ConftestConfigFile.I.package_root() == Path("tests")
+        assert FixturesConfigConfigFile.I.package_root() == Path("tests")
 
     def test_parent_path(self) -> None:
         """Test method."""
-        assert ConftestConfigFile.I.parent_path() == Path("tests")
+        assert FixturesConfigConfigFile.I.parent_path() == Path("tests")
 
     def test_plugin_definition(self) -> None:
         """Test method."""
         assert (
-            ConftestConfigFile.I.plugin_definition()
+            FixturesConfigConfigFile.I.plugin_definition()
             == f'pytest_plugins = ["{conftest.__name__}"]'
         )
 
     def test_stem(self) -> None:
         """Test method."""
-        assert ConftestConfigFile.I.stem() == "conftest"
+        assert FixturesConfigConfigFile.I.stem() == "conftest"
