@@ -7,7 +7,7 @@ to pytest's `tmp_path` so tests never touch real project files.
 from collections.abc import Callable
 from contextlib import chdir
 from pathlib import Path
-from typing import Any, override
+from typing import Any, cast, override
 
 import pytest
 from pyrig.rig.configs.base.config_file import ConfigFile
@@ -78,7 +78,7 @@ def config_file_factory[T: ConfigFile[dict[str, Any] | list[Any]]](
                 path = super().path()
                 if not (path.is_relative_to(tmp_path) or Path.cwd() == tmp_path):
                     path = tmp_path / path
-                return path
+                return cast("Path", path)
 
         return TestConfigFile  # ty:ignore[invalid-explicit-return]
 

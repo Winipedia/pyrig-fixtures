@@ -78,7 +78,7 @@ def sample_config_file(
         @override
         def _dump(self, configs: dict[str, Any] | list[Any]) -> None:
             """Dump the config."""
-            return super()._dump(configs)
+            super()._dump(configs)
 
         @override
         def extension(self) -> str:

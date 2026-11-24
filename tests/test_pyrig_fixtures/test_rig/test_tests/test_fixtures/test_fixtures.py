@@ -5,7 +5,7 @@ import shutil
 import subprocess
 from collections.abc import Callable, Iterator
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from pyrig.core.subprocesses import Args
@@ -277,7 +277,7 @@ def test_run_init_pyrig_project(
     def tmp_path_factory_for(worker: str) -> pytest.TempPathFactory:
         factory = mocker.MagicMock(spec=pytest.TempPathFactory)
         factory.getbasetemp.return_value = tmp_path / worker
-        return factory
+        return cast("pytest.TempPathFactory", factory)
 
     result = func(request, tmp_path_factory_for("gw3"))
     assert result == (True, "Simulated Success")
