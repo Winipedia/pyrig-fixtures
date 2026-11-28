@@ -81,7 +81,7 @@ def command_works() -> Callable[[FunctionType], bool]:
         )
         completed_process = args.run()
         stdout = completed_process.stdout
-        name = cmd.__name__.replace("_", "-")
+        name = snake_to_kebab_case(cmd.__name__)
         return name in stdout
 
     return check
